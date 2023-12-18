@@ -5,7 +5,7 @@ import numpy as np
 import pydicom
 from batchgenerators.utilities.file_and_folder_operations import *
 
-from convert_raw_data.label_handling import convert_shanks_labels_to_mine
+from cbctseg.convert_raw_data.label_handling import convert_shanks_labels_to_mine
 
 def psg_to_npa(path):
     """
