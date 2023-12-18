@@ -36,8 +36,8 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = ""
-repository = ""
+#homepage = ""
+#repository = ""
 
 
 [project.optional-dependencies]
