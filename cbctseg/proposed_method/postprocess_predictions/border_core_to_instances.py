@@ -2,15 +2,17 @@ from multiprocessing import Pool
 
 import numpy as np
 import SimpleITK as sitk
+import torch.cuda
 from batchgenerators.utilities.file_and_folder_operations import *
 from acvl_utils.instance_segmentation.instance_as_semantic_seg import convert_semantic_to_instanceseg, \
     postprocess_instance_segmentation
 from nnunet.utilities.sitk_stuff import copy_geometry
+import pandas as pd
 
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
                                 isolated_border_as_separate_instance_threshold=0.03, num_processes: int = 12,
-                                overwrite: bool = True):
+                                overwrite: bool = True, min_instance_size: int = 0):
     maybe_mkdir_p(output_folder)
 
     input_files = nifti_files(border_core_seg_folder, join=False)
@@ -24,7 +26,8 @@ def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_cen
             output_files,
             [small_center_threshold] * len(output_files),
             [isolated_border_as_separate_instance_threshold] * len(output_files),
-            [overwrite] * len(output_files)
+            [overwrite] * len(output_files),
+            [min_instance_size] * len(output_files),
             )
     )
     _ = res.get()
@@ -33,7 +36,8 @@ def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_cen
 
 
 def load_convert_semantic_to_instance_save(input_file: str, output_file: str, small_center_threshold=0.03,
-                                           isolated_border_as_separate_instance_threshold=0.03, overwrite=True):
+                                           isolated_border_as_separate_instance_threshold=0.03, overwrite=True,
+                                           min_instance_size: float = 0):
     if overwrite or not isfile(output_file):
         print(os.path.basename(input_file))
         itk_img = sitk.ReadImage(input_file)
@@ -41,6 +45,14 @@ def load_convert_semantic_to_instance_save(input_file: str, output_file: str, sm
         spacing = np.array(itk_img.GetSpacing())[::-1]
         instance_seg = convert_semantic_to_instanceseg(npy_img, spacing, small_center_threshold,
                                                        isolated_border_as_separate_instance_threshold)
+        if min_instance_size > 0:
+            vol_per_voxel = np.prod(spacing)
+            n_pixel_cutoff = min_instance_size / vol_per_voxel
+            instances = [i for i in pd.unique(instance_seg.ravel()) if i != 0]
+            for i in instances:
+                mask = instance_seg == i
+                if np.sum(mask) < n_pixel_cutoff:
+                    instance_seg[mask] = 0
         instance_seg = postprocess_instance_segmentation(instance_seg)
         itk_res = sitk.GetImageFromArray(instance_seg)
         itk_res = copy_geometry(itk_res, itk_img)
@@ -105,3 +117,4 @@ if __name__ == '__main__':
     #                                 isolated_border_as_separate_instance_threshold=
     #                                 isolated_border_as_separate_instance_threshold_default,
     #                                 num_processes=num_processes)
+

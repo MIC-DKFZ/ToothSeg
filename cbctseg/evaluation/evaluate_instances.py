@@ -89,6 +89,7 @@ def compute_instance_only_metrics(folder_pred, folder_gt, num_processes: int):
     save_json(metrics, join(folder_pred, 'metrics_inst.json'))
     print(folder_pred)
     print(metrics)
+    return metrics
 
 
 if __name__ == '__main__':
