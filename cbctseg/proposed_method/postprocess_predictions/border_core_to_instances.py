@@ -52,7 +52,8 @@ if __name__ == '__main__':
     isolated_border_as_separate_instance_threshold_default = 0.26999999999999996  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
 
     import argparse
-    parser = argparse.ArgumentParser("This script takes a folder containing nifti files with border-core predictions and converts them into an instance segmentation map.")
+    parser = argparse.ArgumentParser("This script takes a folder containing nifti files with border-core predictions "
+                                     "and converts them into an instance segmentation map.")
     parser.add_argument('-i', type=str, required=True,
                         help='Input folder. Must contain nifti files with border-core segmentations')
     parser.add_argument('-o', type=str, required=True,

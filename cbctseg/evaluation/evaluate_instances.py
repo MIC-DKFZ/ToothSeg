@@ -94,9 +94,10 @@ def compute_instance_only_metrics(folder_pred, folder_gt, num_processes: int):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with instance predictions "
-                                     "(tooth label doesn't matter) and evaluated the quality of the instances vs the "
+                                     "(tooth label doesn't matter) and evaluates the quality of the instances vs the "
                                      "reference. Useful for measuring how well we recognize teeth in general."
-                                     "Metrics will be saved in metrics_inst.json in input folder")
+                                     "Metrics will be saved in metrics_inst.json in input folder.\n"
+                                     "Requires predicted and reference files to have the same shapes!")
     parser.add_argument('-i', type=str, required=True,
                         help="Input folder. Must contain nifti files with instance predictions (tooth label doesn't "
                              "matter)")

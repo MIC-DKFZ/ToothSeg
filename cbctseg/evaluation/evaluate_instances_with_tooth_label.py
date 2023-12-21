@@ -70,7 +70,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with tooth predictions "
                                      "and evaluates them vs the "
                                      "reference. Tooth label matters!"
-                                     "Metrics will be saved in metrics_obj.json in input folder")
+                                     "Metrics will be saved in metrics_obj.json in input folder\n"
+                                     "Requires predicted and reference files to have the same shapes!")
     parser.add_argument('-i', type=str, required=True,
                         help='Input folder. Must contain nifti files with tooth predictions (correct tooth labels!)')
     parser.add_argument('-ref', type=str, required=True,

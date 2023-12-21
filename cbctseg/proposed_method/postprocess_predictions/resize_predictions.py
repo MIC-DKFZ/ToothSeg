@@ -36,9 +36,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("This script takes a folder containing segmentation nifti files and resizes "
                                      "them to corresponding (equally named) niftis on the ref folder. The niftis in ref "
                                      "folder can contain anything (doesn't matter if its images or segs). "
-                                     "\nTHIS WILL BE RUN ON GPU! There is a CPU fallback in case GPU memory is insufficient (see -np)")
+                                     "\nTHIS WILL BE RUN ON GPU! There is a CPU fallback in case GPU memory is "
+                                     "insufficient (see -np)")
     parser.add_argument('-i', type=str, required=True,
-                        help='Input folder. Must contain nifti files with border-core segmentations')
+                        help='Input folder. Must contain nifti files with segmentations')
     parser.add_argument('-o', type=str, required=True,
                         help="Output folder. Must be empty! If it doesn't exist it will be created")
     parser.add_argument('-ref', type=str, required=True,
