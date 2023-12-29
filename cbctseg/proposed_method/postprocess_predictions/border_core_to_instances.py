@@ -12,7 +12,7 @@ import pandas as pd
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
                                 isolated_border_as_separate_instance_threshold=0.03, num_processes: int = 12,
-                                overwrite: bool = True, min_instance_size: int = 0):
+                                overwrite: bool = True, min_instance_size: float = 0):
     maybe_mkdir_p(output_folder)
 
     input_files = nifti_files(border_core_seg_folder, join=False)
@@ -82,8 +82,7 @@ if __name__ == '__main__':
                              f'instance instead of being deleted. Default: '
                              f'{isolated_border_as_separate_instance_threshold_default}')
     parser.add_argument('-min_inst_size', type=float, required=False, default=small_center_threshold_default,
-                        help=f'Isolated border predictions (no core) larger than this (volume) will be made a separate '
-                             f'instance instead of being deleted. Default: '
+                        help=f'Minimum instance size (volume). Default: '
                              f'{min_instance_size_default}')
     parser.add_argument('--overwrite_existing', action='store_true',
                         help='By default the script will skip existing results. Set this flag to overwrite (recompute) '
@@ -94,7 +93,7 @@ if __name__ == '__main__':
                                 small_center_threshold=args.sct,
                                 isolated_border_as_separate_instance_threshold=
                                 args.ibsi,
-                                num_processes=args.np, min_instance_size=)
+                                num_processes=args.np, min_instance_size=args.min_inst_size)
 
     #
     # folders_pred = [
