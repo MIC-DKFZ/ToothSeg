@@ -7,7 +7,7 @@ from nnunet.utilities.sitk_stuff import copy_geometry
 
 
 def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_image: str, output_filename: str,
-                                               min_instance_volume: float,
+                                               min_tooth_volume: float,
                                                isolated_semsegs_as_new_instances: bool = False,
                                                overwrite: bool = True,
                                                allow_background_label: bool = False) -> None:
@@ -18,17 +18,13 @@ def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_im
             semseg_npy = sitk.GetArrayFromImage(semseg_itk).astype(np.uint8)
             instanceseg_npy = sitk.GetArrayFromImage(instanceseg_itk).astype(np.uint8)
 
-            vol_per_voxel = np.prod(semseg_itk.GetSpacing())
-            n_pixel_cutoff = min_instance_volume / vol_per_voxel
-
             output = np.zeros_like(semseg_npy)
 
             instances = np.sort(pd.unique(instanceseg_npy.ravel()))
             for i in instances:
                 if i == 0: continue
                 instance_mask = instanceseg_npy == i
-                if np.sum(instance_mask) < n_pixel_cutoff:
-                    continue
+
                 seg_predictions = semseg_npy[instance_mask]
 
                 freq = np.bincount(seg_predictions)
@@ -38,7 +34,6 @@ def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_im
                 if allow_background_label:
                     predicted_label = np.argmax(freq)
                 else:
-                    # [1:] because we dont want something to end up as 0? TODO evaluate this?
                     predicted_label = np.argmax(freq[1:]) + 1
 
                 output[instance_mask] = predicted_label
@@ -47,8 +42,17 @@ def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_im
                 labels = [i for i in np.sort(pd.unique(semseg_npy.ravel())) if i != 0]
                 for l in labels:
                     mask = semseg_npy == l
-                    if np.sum(instanceseg_npy[mask]) == 0 and np.sum(mask) > n_pixel_cutoff:
+                    if np.sum(instanceseg_npy[mask]) == 0:
                         output[mask] = l
+
+            if min_tooth_volume > 0:
+                vol_per_voxel = np.prod(semseg_itk.GetSpacing())
+                n_pixel_cutoff = min_tooth_volume / vol_per_voxel
+                instances = [i for i in pd.unique(output.ravel()) if i != 0]
+                for i in instances:
+                    mask = output == i
+                    if np.sum(mask) < n_pixel_cutoff:
+                        output[mask] = 0
 
             output_itk = sitk.GetImageFromArray(output)
             output_itk = copy_geometry(output_itk, semseg_itk)
@@ -58,7 +62,7 @@ def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_im
             raise e
 
 
-def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, output_folder, min_instance_volume: float = 3,
+def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, output_folder, min_tooth_volume: float = 3,
                                             isolated_semsegs_as_new_instances: bool = False,
                                             num_processes: int = 12, overwrite: bool = True,
                                             allow_bg: bool = False):
@@ -83,7 +87,7 @@ def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, o
             [join(semseg_folder, i) for i in files],
             [join(instanceseg_folder, i) for i in files],
             [join(output_folder, i) for i in files],
-            [min_instance_volume] * len(files),
+            [min_tooth_volume] * len(files),
             [isolated_semsegs_as_new_instances] * len(files),
             [overwrite] * len(files),
             [allow_bg] * len(files),
@@ -95,19 +99,17 @@ def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, o
 
 
 if __name__ == '__main__':
+    folder_semseg = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset181_CBCTTeeth_semantic_spacing03/nnUNetTrainer_onlyMirror01_DASegOrd0__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_resized'
+
     folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_instances_resized'
-    folder_semseg = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset181_CBCTTeeth_semantic_spacing03/nnUNetTrainer_onlyMirror01_DASegOrd0__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_resized'
-    # folder_out = folder_raw_instances + '_181_sp03_192_bs8_minsize3_isoFalse'
-    # assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 3, isolated_semsegs_as_new_instances=False, num_processes=128, overwrite=False)
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
 
-    # folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_instances_resized'
-    # folder_semseg = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset182_CBCTTeeth_semantic_spacing05/nnUNetTrainer_onlyMirror01_DASegOrd0__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_resized'
-    # folder_out = folder_raw_instances + '_182_sp05_192_bs8_minsize3_isoFalse'
-    # assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 3, isolated_semsegs_as_new_instances=False, num_processes=128, overwrite=False)
+    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_instances_resized'
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
 
-    folder_out = folder_raw_instances + '_181_sp03_192_bs8_minsize35_isoFalse'
-    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 35, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
+    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs16/fold_0/validation_instances_resized'
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
 
-    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation__minsize20_sct0_ibsi0_instances_resized'
-    folder_out = folder_raw_instances + '_181_sp03_192_bs8_isoFalse_allowBGTrue'
-    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
