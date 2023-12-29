@@ -10,6 +10,7 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
 from nnunetv2.preprocessing.resampling.resample_torch import resample_torch
+from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
 
 OVERWRITE_EXISTING = False
@@ -154,7 +155,7 @@ if __name__ == '__main__':
     # export nnUNet_raw="/media/isensee/My Book1/datasets/Shank"
 
     set_start_method('spawn')
-    source_dir = '/home/isensee/drives/E132-Projekte/Projects/Helmholtz_Imaging_ACVL/RadboudUni_2022_ShankCBCTTeeth/Processed_Database/Dataset164_Filtered_Classes'
+    source_dir = join(nnUNet_raw, maybe_convert_to_dataset_name(164))
 
     convert_dataset(source_dir, f'Dataset{181}_CBCTTeeth_semantic_spacing03', (0.3, 0.3, 0.3))
     convert_dataset(source_dir, f'Dataset{182}_CBCTTeeth_semantic_spacing05', (0.5, 0.5, 0.5))

@@ -60,8 +60,9 @@ def load_convert_semantic_to_instance_save(input_file: str, output_file: str, sm
 
 
 if __name__ == '__main__':
-    small_center_threshold_default = 0.26999999999999996  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
-    isolated_border_as_separate_instance_threshold_default = 0.26999999999999996  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
+    small_center_threshold_default = 20  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
+    isolated_border_as_separate_instance_threshold_default = 0  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
+    min_instance_size_default = 20
 
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with border-core predictions "
@@ -80,6 +81,10 @@ if __name__ == '__main__':
                         help=f'Isolated border predictions (no core) larger than this (volume) will be made a separate '
                              f'instance instead of being deleted. Default: '
                              f'{isolated_border_as_separate_instance_threshold_default}')
+    parser.add_argument('-min_inst_size', type=float, required=False, default=small_center_threshold_default,
+                        help=f'Isolated border predictions (no core) larger than this (volume) will be made a separate '
+                             f'instance instead of being deleted. Default: '
+                             f'{min_instance_size_default}')
     parser.add_argument('--overwrite_existing', action='store_true',
                         help='By default the script will skip existing results. Set this flag to overwrite (recompute) '
                              'them instead.')
@@ -89,7 +94,7 @@ if __name__ == '__main__':
                                 small_center_threshold=args.sct,
                                 isolated_border_as_separate_instance_threshold=
                                 args.ibsi,
-                                num_processes=args.np)
+                                num_processes=args.np, min_instance_size=)
 
     #
     # folders_pred = [

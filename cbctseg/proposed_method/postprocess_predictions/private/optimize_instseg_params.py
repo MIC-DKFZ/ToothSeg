@@ -22,8 +22,13 @@ if __name__ == '__main__':
     source_folder = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation'
     num_processes = 128
 
+    results = []
     small_center_threshold_default = 0.26999999999999996  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
     isolated_border_as_separate_instance_threshold_default = 0.26999999999999996  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
     min_instance_size = 20
-    run(source_folder, small_center_threshold_default, isolated_border_as_separate_instance_threshold_default,
-        min_instance_size, f'_minsize{min_instance_size}_sct{round(small_center_threshold_default, 3)}_ibsi{round(isolated_border_as_separate_instance_threshold_default, 3)}')
+    identifier = f'_minsize{min_instance_size}_sct{round(small_center_threshold_default, 3)}_ibsi{round(isolated_border_as_separate_instance_threshold_default, 3)}'
+    results.append(
+        (identifier,
+         run(source_folder, small_center_threshold_default, isolated_border_as_separate_instance_threshold_default,
+             min_instance_size, identifier)))
+
