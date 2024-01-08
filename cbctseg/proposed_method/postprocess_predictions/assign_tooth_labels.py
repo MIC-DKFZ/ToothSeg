@@ -99,17 +99,26 @@ def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, o
 
 
 if __name__ == '__main__':
+    # mintoothsize0 because min tooth size has no effect here (empirically). This is already filtered when converting border core to instances
     folder_semseg = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset181_CBCTTeeth_semantic_spacing03/nnUNetTrainer_onlyMirror01_DASegOrd0__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_resized'
 
     folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_instances_resized'
-    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
-    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
-
-    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_instances_resized'
-    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
-    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize0_isoFalse_allowbgTrue'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
 
     folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs16/fold_0/validation_instances_resized'
-    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize20_isoFalse'
-    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 20, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False)
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize0_isoFalse_allowbgTrue'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
+
+    # folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_instances_resized'
+    # folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize0_isoFalse_allowbgTrue'
+    # assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
+
+    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset186_CBCTTeeth_instance_spacing02_brd2px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs8/fold_0/validation_instances_resized'
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize0_isoFalse_allowbgTrue'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
+
+    folder_raw_instances = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_instances_resized'
+    folder_out = folder_raw_instances + '_181_sp03_256_bs8_mintoothsize0_isoFalse_allowbgTrue'
+    assign_tooth_labels_to_all_instancesegs(folder_semseg, folder_raw_instances, folder_out, 0, isolated_semsegs_as_new_instances=False, num_processes=190, overwrite=False, allow_bg=True)
 

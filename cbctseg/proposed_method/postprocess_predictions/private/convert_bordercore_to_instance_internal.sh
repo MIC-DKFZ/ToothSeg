@@ -7,7 +7,6 @@ python border_core_to_instances.py -i ${INPUT_FOLDER} -o ${INPUT_FOLDER}_instanc
 INPUT_FOLDER=/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_192_bs16/fold_0/validation
 python border_core_to_instances.py -i ${INPUT_FOLDER} -o ${INPUT_FOLDER}_instances -np 96 -min_inst_size 20 -ibsi 0 -sct 20
 
-# not done yet
 INPUT_FOLDER=/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset188_CBCTTeeth_instance_spacing02_brd3px/nnUNetTrainer__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation
 python border_core_to_instances.py -i ${INPUT_FOLDER} -o ${INPUT_FOLDER}_instances -np 96 -min_inst_size 20 -ibsi 0 -sct 20
 
