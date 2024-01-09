@@ -16,8 +16,8 @@ OVERWRITE_EXISTING = False
 def _resample_core_resize_folder(source_queue: Queue,
                                  num_workers: int,
                                  export_pool: Pool,
-                                 target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3)):
-    num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
+                                 target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3),
+                                 num_cpu_threads: int = max((1, cpu_count() - 2, cpu_count() // 2))):
     r = []
     end_ctr = 0
     while True:
@@ -80,7 +80,8 @@ def resize_folder(input_folder,
                   output_folder,
                   target_spacing: Tuple[float, float, float],
                   num_processes_loading: int = 4,
-                  num_processes_export: int = 4):
+                  num_processes_export: int = 4,
+                  resize_num_cpu_threads: int = max((1, cpu_count() - 2, cpu_count() // 2))):
     """
     THIS ONLY WORKS FOR IMAGES. DO NOT (!!!!) USE THIS FOR RESIZING SEGMENTATIONS
     :param input_folder:
@@ -110,7 +111,13 @@ def resize_folder(input_folder,
         processes.append(
             pr
         )
-    r = _resample_core_resize_folder(q, num_processes_loading, export_pool=pool, target_spacing=target_spacing)
+    r = _resample_core_resize_folder(
+        q,
+        num_processes_loading,
+        export_pool=pool,
+        target_spacing=target_spacing,
+        num_cpu_threads=resize_num_cpu_threads
+    )
 
     _ = [i.get() for i in r if i is not None]
 
@@ -121,5 +128,5 @@ if __name__ == '__main__':
     source_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164), 'imagesTs')
     target_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164),
                          'imagesTs_resized_for_instanceseg_spacing_02_02_02')
-    resize_folder(source_folder, target_folder, target_spacing=(0.2, 0.2, 0.2))
+    resize_folder(source_folder, target_folder, target_spacing=(0.2, 0.2, 0.2), resize_num_cpu_threads=64)
 
