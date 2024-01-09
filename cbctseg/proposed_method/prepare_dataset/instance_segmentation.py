@@ -93,38 +93,9 @@ def convert_sem_dataset_to_instance(
                           len(source_cases), '.nii.gz', target_dataset_name, dataset=dataset)
 
 
-
 if __name__ == '__main__':
     # export nnUNet_raw="/media/isensee/My Book1/datasets/Shank"
 
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(181),
-        'Dataset184_CBCTTeeth_instance_spacing03_brd2px',
-        0.3,
-        2,
-        num_processes=128
-    )
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(182),
-        'Dataset185_CBCTTeeth_instance_spacing05_brd2px',
-        0.5,
-        2,
-        num_processes=128
-    )
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(183),
-        'Dataset186_CBCTTeeth_instance_spacing02_brd2px',
-        0.2,
-        2,
-        num_processes=128
-    )
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(181),
-        'Dataset187_CBCTTeeth_instance_spacing03_brd3px',
-        0.3,
-        3,
-        num_processes=128
-    )
     convert_sem_dataset_to_instance(
         maybe_convert_to_dataset_name(183),
         'Dataset188_CBCTTeeth_instance_spacing02_brd3px',

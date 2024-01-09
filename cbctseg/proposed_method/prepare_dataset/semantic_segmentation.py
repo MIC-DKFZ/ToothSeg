@@ -12,7 +12,6 @@ from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_ne
 from nnunetv2.preprocessing.resampling.resample_torch import resample_torch
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
-
 OVERWRITE_EXISTING = False
 
 
@@ -56,7 +55,7 @@ def resample_core(source_queue: Queue,
             if end_ctr == num_workers:
                 break
             continue
-        #print('get item')
+        # print('get item')
         im_source, seg_source, source_spacing, source_origin, source_direction, target_image, target_label = item
         source_shape = im_source.shape
 
@@ -66,12 +65,14 @@ def resample_core(source_queue: Queue,
         print(f'{os.path.basename(target_label)}; source shape: {source_shape}, target shape {target_shape}')
         try:
             seg_target_correct_labels = \
-            resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True, num_threads=num_cpu_threads,
-                           device=torch.device('cuda:0'))[0].numpy()
+                resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True,
+                               num_threads=num_cpu_threads,
+                               device=torch.device('cuda:0'))[0].numpy()
         except:
             seg_target_correct_labels = \
-            resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True, num_threads=num_cpu_threads,
-                           device=torch.device('cpu'))[0].numpy()
+                resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True,
+                               num_threads=num_cpu_threads,
+                               device=torch.device('cpu'))[0].numpy()
         torch.cuda.empty_cache()
 
         seg_target_itk = sitk.GetImageFromArray(seg_target_correct_labels)
@@ -82,7 +83,8 @@ def resample_core(source_queue: Queue,
         # now resample images. For simplicity, just make this linear
         try:
             im_source = \
-                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False, num_threads=num_cpu_threads,
+                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False,
+                               num_threads=num_cpu_threads,
                                device=torch.device('cuda:0'))[0].numpy()
         except:
             im_source = \
@@ -151,6 +153,8 @@ def convert_dataset(source_dir, target_name, target_spacing):
     shutil.copy(join(source_dir, 'dataset.json'), join(output_dir_base, 'dataset.json'))
 
 
+
+
 if __name__ == '__main__':
     # export nnUNet_raw="/media/isensee/My Book1/datasets/Shank"
 
@@ -158,9 +162,5 @@ if __name__ == '__main__':
     source_dir = join(nnUNet_raw, maybe_convert_to_dataset_name(164))
 
     convert_dataset(source_dir, f'Dataset{181}_CBCTTeeth_semantic_spacing03', (0.3, 0.3, 0.3))
-    convert_dataset(source_dir, f'Dataset{182}_CBCTTeeth_semantic_spacing05', (0.5, 0.5, 0.5))
+    # needed for instance segmentation
     convert_dataset(source_dir, f'Dataset{183}_CBCTTeeth_semantic_spacing02', (0.2, 0.2, 0.2))
-
-
-
-
