@@ -128,5 +128,7 @@ if __name__ == '__main__':
     source_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164), 'imagesTs')
     target_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164),
                          'imagesTs_resized_for_instanceseg_spacing_02_02_02')
-    resize_folder(source_folder, target_folder, target_spacing=(0.2, 0.2, 0.2), resize_num_cpu_threads=64)
+    resize_folder(source_folder, target_folder, target_spacing=(0.2, 0.2, 0.2),
+                  num_processes_loading=8,
+                  num_processes_export=32)
 
