@@ -12,7 +12,11 @@ def resample_segmentations_to_ref(ref_folder, pred_folder, target_folder, overwr
         if overwrite or not isfile(join(target_folder, f)):
             print(os.path.basename(f))
             seg = sitk.GetArrayFromImage(sitk.ReadImage(join(pred_folder, f))).astype(np.uint8)
-            target_itk_img = sitk.ReadImage(join(ref_folder, f))
+            target_file = join(ref_folder, f)
+            if not isfile(target_file):
+                # when the target file is an image it will have the _0000 suffix
+                target_file = target_file[:-7] + '_0000.nii.gz'
+            target_itk_img = sitk.ReadImage(target_file)
             target_shape = sitk.GetArrayFromImage(target_itk_img).shape
             try:
                 seg_resampled = \
