@@ -1,3 +1,4 @@
+from multiprocessing import set_start_method
 from typing import Tuple
 
 from acvl_utils.instance_segmentation.instance_matching import compute_all_matches
@@ -94,6 +95,8 @@ def compute_instance_only_metrics(folder_pred, folder_gt, num_processes: int):
 
 
 if __name__ == '__main__':
+    set_start_method('spawn')
+
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with instance predictions "
                                      "(tooth label doesn't matter) and evaluates the quality of the instances vs the "

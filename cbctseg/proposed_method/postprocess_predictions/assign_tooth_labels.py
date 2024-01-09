@@ -1,4 +1,4 @@
-from multiprocessing import Pool
+from multiprocessing import Pool, set_start_method
 import numpy as np
 import SimpleITK as sitk
 import pandas as pd
@@ -130,6 +130,7 @@ def entry_point():
 
 
 if __name__ == '__main__':
+    set_start_method('spawn')
     entry_point()
 
     # folder_semseg = '/dkfz/cluster/gpu/checkpoints/OE0441/isensee/nnUNet_results_remake/Dataset181_CBCTTeeth_semantic_spacing03/nnUNetTrainer_onlyMirror01_DASegOrd0__nnUNetPlans__3d_fullres_resample_torch_256_bs8/fold_0/validation_resized'

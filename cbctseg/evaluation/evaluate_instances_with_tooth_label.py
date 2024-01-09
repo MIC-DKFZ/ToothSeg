@@ -1,3 +1,4 @@
+from multiprocessing import set_start_method
 from typing import Tuple, Iterable
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
@@ -66,6 +67,8 @@ def compute_obj_metrics(folder_pred, folder_gt, num_processes: int, labels: Iter
 
 
 if __name__ == '__main__':
+    set_start_method('spawn')
+
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with tooth predictions "
                                      "and evaluates them vs the "

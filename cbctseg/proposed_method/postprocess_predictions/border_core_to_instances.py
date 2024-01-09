@@ -1,4 +1,4 @@
-from multiprocessing import Pool
+from multiprocessing import Pool, set_start_method
 
 import numpy as np
 import SimpleITK as sitk
@@ -60,6 +60,8 @@ def load_convert_semantic_to_instance_save(input_file: str, output_file: str, sm
 
 
 if __name__ == '__main__':
+    set_start_method('spawn')
+
     small_center_threshold_default = 20  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
     isolated_border_as_separate_instance_threshold_default = 0  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
     min_instance_size_default = 20

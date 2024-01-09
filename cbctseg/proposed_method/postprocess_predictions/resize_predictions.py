@@ -1,3 +1,5 @@
+from multiprocessing import set_start_method
+
 import SimpleITK as sitk
 import numpy as np
 import torch
@@ -36,6 +38,8 @@ def resample_segmentations_to_ref(ref_folder, pred_folder, target_folder, overwr
 
 
 if __name__ == '__main__':
+    set_start_method('spawn')
+
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing segmentation nifti files and resizes "
                                      "them to corresponding (equally named) niftis on the ref folder. The niftis in ref "
