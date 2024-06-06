@@ -9,7 +9,7 @@ import torch
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
-from nnunetv2.preprocessing.resampling.resample_torch import resample_torch
+from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
 OVERWRITE_EXISTING = False
@@ -65,12 +65,12 @@ def resample_core(source_queue: Queue,
         print(f'{os.path.basename(target_label)}; source shape: {source_shape}, target shape {target_shape}')
         try:
             seg_target_correct_labels = \
-                resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True,
+                resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                num_threads=num_cpu_threads,
                                device=torch.device('cuda:0'))[0].numpy()
         except:
             seg_target_correct_labels = \
-                resample_torch(torch.from_numpy(seg_source)[None], target_shape, None, None, is_seg=True,
+                resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                num_threads=num_cpu_threads,
                                device=torch.device('cpu'))[0].numpy()
         torch.cuda.empty_cache()
@@ -83,12 +83,12 @@ def resample_core(source_queue: Queue,
         # now resample images. For simplicity, just make this linear
         try:
             im_source = \
-                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False,
+                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                num_threads=num_cpu_threads,
                                device=torch.device('cuda:0'))[0].numpy()
         except:
             im_source = \
-                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False,
+                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                num_threads=num_cpu_threads,
                                device=torch.device('cpu'))[0].numpy()
         torch.cuda.empty_cache()
@@ -151,8 +151,6 @@ def convert_dataset(source_dir, target_name, target_spacing):
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
     shutil.copy(join(source_dir, 'dataset.json'), join(output_dir_base, 'dataset.json'))
-
-
 
 
 if __name__ == '__main__':

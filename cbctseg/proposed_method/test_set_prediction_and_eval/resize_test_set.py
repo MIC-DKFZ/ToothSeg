@@ -7,7 +7,7 @@ import torch
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
-from nnunetv2.preprocessing.resampling.resample_torch import resample_torch
+from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
 OVERWRITE_EXISTING = False
@@ -40,12 +40,12 @@ def _resample_core_resize_folder(source_queue: Queue,
         # now resample images. For simplicity, just make this linear
         try:
             im_source = \
-                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False,
+                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                num_threads=num_cpu_threads,
                                device=torch.device('cuda:0'))[0].numpy()
         except:
             im_source = \
-                resample_torch(torch.from_numpy(im_source)[None], target_shape, None, None, is_seg=False,
+                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                num_threads=num_cpu_threads,
                                device=torch.device('cpu'))[0].numpy()
         torch.cuda.empty_cache()

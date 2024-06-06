@@ -4,7 +4,7 @@ import SimpleITK as sitk
 import numpy as np
 import torch
 from batchgenerators.utilities.file_and_folder_operations import *
-from nnunetv2.preprocessing.resampling.resample_torch import resample_torch
+from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 
 
 def resample_segmentations_to_ref(ref_folder, pred_folder, target_folder, overwrite=False, num_threads=128):
@@ -22,13 +22,13 @@ def resample_segmentations_to_ref(ref_folder, pred_folder, target_folder, overwr
             target_shape = sitk.GetArrayFromImage(target_itk_img).shape
             try:
                 seg_resampled = \
-                    resample_torch(torch.from_numpy(seg)[None], target_shape, None, None, is_seg=True,
+                    resample_torch_simple(torch.from_numpy(seg)[None], target_shape, is_seg=True,
                                    num_threads=num_threads,
                                    device=torch.device('cuda:0'))[0].numpy()
             except:
                 print(f'CPU, file: {f}')
                 seg_resampled = \
-                    resample_torch(torch.from_numpy(seg)[None], target_shape, None, None, is_seg=True,
+                    resample_torch_simple(torch.from_numpy(seg)[None], target_shape, is_seg=True,
                                    num_threads=num_threads,
                                    device=torch.device('cpu'))[0].numpy()
             torch.cuda.empty_cache()
