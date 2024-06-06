@@ -11,6 +11,8 @@ from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
 from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
+from nnunetv2.utilities.utils import get_filenames_of_train_images_and_targets, \
+    get_identifiers_from_splitted_dataset_folder, create_lists_from_splitted_dataset_folder
 
 OVERWRITE_EXISTING = False
 
@@ -120,18 +122,32 @@ def convert_dataset(source_dir, target_name, target_spacing):
     seg_fnames = []
     target_images = []
     target_labels = []
-    source_cases = nifti_files(join(source_dir, 'labelsTr'), join=False)
-    for s in source_cases:
-        image_fnames.append(join(source_dir, 'imagesTr', s[:-7] + '_0000.nii.gz'))
-        seg_fnames.append(join(source_dir, 'labelsTr', s))
-        target_images.append(join(nnUNet_raw, target_name, 'imagesTr', s[:-7] + '_0000.nii.gz'))
-        target_labels.append(join(nnUNet_raw, target_name, 'labelsTr', s))
-    source_test_cases = nifti_files(join(source_dir, 'labelsTs'), join=False)
-    for s in source_test_cases:
-        image_fnames.append(join(source_dir, 'imagesTs', s[:-7] + '_0000.nii.gz'))
-        seg_fnames.append(join(source_dir, 'labelsTs', s))
-        target_images.append(join(nnUNet_raw, target_name, 'imagesTs', s[:-7] + '_0000.nii.gz'))
-        target_labels.append(join(nnUNet_raw, target_name, 'labelsTs', s))
+
+    dataset = get_filenames_of_train_images_and_targets(source_dir)
+    dsj = load_json(join(source_dir, 'dataset.json'))
+    fe = dsj['file_ending']
+
+    for k in dataset.keys():
+        assert len(dataset[k]['images']) == 1, "this script only supports one input modality for now"
+        image_fnames.append(dataset[k]['images'][0])
+        seg_fnames.append(dataset[k]['label'])
+        # target names are nifti. Other formats (mha) suck
+        target_images.append(join(nnUNet_raw, target_name, 'imagesTr', k + '_0000.nii.gz'))
+        target_labels.append(join(nnUNet_raw, target_name, 'labelsTr', k + '.nii.gz'))
+
+    imagesTs_dir_source = join(nnUNet_raw, source_dir, 'imagesTs')
+    if isdir(imagesTs_dir_source):
+        assert isdir(join(nnUNet_raw, source_dir, 'labelsTs')), 'This script expects test set labels to be present if test images are available. Stupid, I know.'
+        test_identifiers = get_identifiers_from_splitted_dataset_folder(imagesTs_dir_source, fe)
+        lol = create_lists_from_splitted_dataset_folder(imagesTs_dir_source, fe, test_identifiers)
+
+        for li, te in zip(lol, test_identifiers):
+            assert len(li) == 1, "this script only supports one input modality for now"
+
+            image_fnames.append(li[0])
+            seg_fnames.append(join(source_dir, 'labelsTs', te + fe))
+            target_images.append(join(nnUNet_raw, target_name, 'imagesTs', te + '_0000.nii.gz'))
+            target_labels.append(join(nnUNet_raw, target_name, 'labelsTs', te + '.nii.gz'))
 
     processes = []
     q = Queue(maxsize=2)
