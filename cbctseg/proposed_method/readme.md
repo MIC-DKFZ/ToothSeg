@@ -12,10 +12,11 @@ nnUNetv2_preprocess -d 164 -c 3d_fullres_resample_torch 3d_lowres_resample_torch
 nnUNetv2_preprocess -d 181 182 183 184 185 186 187 188 -c 3d_fullres_resample_torch_128 -np 64
 
 
+```bash
 conda deactivate
 source ~/load_env_torch210.sh
 CUDA_VISIBLE_DEVICES=0,1,2,5 nnUNet_def_n_proc=4 nnUNetv2_train 181 3d_fullres_resample_torch_192_bs8 0 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -num_gpus 4
-
+```
 
 ```json
 

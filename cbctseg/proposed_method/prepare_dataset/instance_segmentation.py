@@ -24,7 +24,7 @@ def semseg_to_instanceseg(source_file: str, target_file: str, border_thickness_i
     current_spacing = list(seg_itk.GetSpacing())[::-1]
     seg = sitk.GetArrayFromImage(seg_itk)
     instances = np.sort(pd.unique(seg.ravel()))
-    # small holes in the reference segmentation are super annoying because the spawn a large ring of order around
+    # small holes in the reference segmentation are super annoying because the spawn a large ring of border around
     # them. These holes are just annotation errors and these rings will confuse the model. Best to fill those holes.
     for i in instances:
         if i != 0:
