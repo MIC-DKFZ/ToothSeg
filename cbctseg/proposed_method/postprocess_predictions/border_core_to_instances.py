@@ -8,12 +8,7 @@ from acvl_utils.instance_segmentation.instance_as_semantic_seg import convert_se
     postprocess_instance_segmentation
 import pandas as pd
 
-
-def copy_geometry(image: sitk.Image, ref: sitk.Image):
-    image.SetOrigin(ref.GetOrigin())
-    image.SetDirection(ref.GetDirection())
-    image.SetSpacing(ref.GetSpacing())
-    return image
+from cbctseg.process_raw_data.utils import copy_geometry
 
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
