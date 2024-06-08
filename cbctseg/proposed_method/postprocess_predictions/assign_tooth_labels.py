@@ -56,7 +56,7 @@ def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_im
 
             output_itk = sitk.GetImageFromArray(output)
             output_itk = copy_geometry(output_itk, semseg_itk)
-            sitk.WriteImage(output_itk, output_filename)
+            sitk.WriteImage(output_itk, output_filename, compressionLevel=8)
         except Exception as e:
             print(f'error in {semseg_image, instanceseg_image, output_filename}')
             raise e
@@ -66,11 +66,12 @@ def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, o
                                             min_tooth_volume: float = 3,
                                             isolated_semsegs_as_new_instances: bool = False,
                                             num_processes: int = 12, overwrite: bool = True,
-                                            allow_bg: bool = False):
+                                            allow_bg: bool = False,
+                                            file_ending: str = '.nii.gz'):
     p = Pool(num_processes)
     maybe_mkdir_p(output_folder)
 
-    files = nifti_files(instanceseg_folder, join=False)
+    files = subfiles(instanceseg_folder, join=False, suffix=file_ending)
     assert all([i in nifti_files(semseg_folder, join=False) for i in files])
     # assign_correct_tooth_labels_to_instanceseg(*list(        zip(
     #         [join(semseg_folder, i) for i in files],
@@ -105,9 +106,11 @@ def entry_point():
                                      "semantic segmentations and assigns the tooth labels as predicted by the "
                                      "semantic segmentation model to the instances.")
     parser.add_argument('-ifolder', type=str, required=True,
-                        help='Input folder. Must contain nifti files with instance predictions')
+                        help='Input folder. Must contain files with instance predictions')
     parser.add_argument('-sfolder', type=str, required=True,
-                        help='Input folder. Must contain nifti files with semantic segmentations')
+                        help='Input folder. Must contain files with semantic segmentations')
+    parser.add_argument('-fe', type=str, required=False, default='.nii.gz',
+                        help='file ending. Default: .nii.gz')
     parser.add_argument('-o', type=str, required=True,
                         help="Output folder. Must be empty! If it doesn't exist it will be created")
     parser.add_argument('-np', type=int, required=False, default=8,
@@ -125,7 +128,8 @@ def entry_point():
         allow_bg=True,
         isolated_semsegs_as_new_instances=False,
         # mintoothsize0 because min tooth size has no effect here (empirically). This is already filtered when converting border core to instances
-        min_tooth_volume=0
+        min_tooth_volume=0,
+        file_ending=args.fe
     )
 
 
