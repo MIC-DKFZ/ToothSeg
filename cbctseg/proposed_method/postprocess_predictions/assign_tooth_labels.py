@@ -73,7 +73,7 @@ def assign_tooth_labels_to_all_instancesegs(semseg_folder, instanceseg_folder, o
     maybe_mkdir_p(output_folder)
 
     files = subfiles(instanceseg_folder, join=False, suffix=file_ending)
-    assert all([i in nifti_files(semseg_folder, join=False) for i in files])
+    assert all([i in subfiles(semseg_folder, join=False, suffix=file_ending) for i in files])
     # assign_correct_tooth_labels_to_instanceseg(*list(        zip(
     #         [join(semseg_folder, i) for i in files],
     #         [join(instanceseg_folder, i) for i in files],
