@@ -6,8 +6,14 @@ import torch.cuda
 from batchgenerators.utilities.file_and_folder_operations import *
 from acvl_utils.instance_segmentation.instance_as_semantic_seg import convert_semantic_to_instanceseg, \
     postprocess_instance_segmentation
-from nnunet.utilities.sitk_stuff import copy_geometry
 import pandas as pd
+
+
+def copy_geometry(image: sitk.Image, ref: sitk.Image):
+    image.SetOrigin(ref.GetOrigin())
+    image.SetDirection(ref.GetDirection())
+    image.SetSpacing(ref.GetSpacing())
+    return image
 
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
@@ -80,13 +86,13 @@ if __name__ == '__main__':
     parser.add_argument('-sct', type=float, required=False, default=small_center_threshold_default,
                         help=f'Small center threshold (volume). Removes small center predictions. Default: '
                              f'{small_center_threshold_default}')
-    parser.add_argument('-ibsi', type=float, required=False, default=small_center_threshold_default,
+    parser.add_argument('-ibsi', type=float, required=False, default=isolated_border_as_separate_instance_threshold_default,
                         help=f'Isolated border predictions (no core) larger than this (volume) will be made a separate '
                              f'instance instead of being deleted. Default: '
                              f'{isolated_border_as_separate_instance_threshold_default}')
     parser.add_argument('-fe', type=str, required=False, default='.nii.gz',
                         help=f'File ending, Default: .nii.gz')
-    parser.add_argument('-min_inst_size', type=float, required=False, default=small_center_threshold_default,
+    parser.add_argument('-min_inst_size', type=float, required=False, default=min_instance_size_default,
                         help=f'Minimum instance size (volume). Default: '
                              f'{min_instance_size_default}')
     parser.add_argument('--overwrite_existing', action='store_true',
