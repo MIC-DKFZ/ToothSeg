@@ -44,8 +44,8 @@ def compute_dice_tp(matches: List[Tuple], label: int) -> float:
     return np.mean(dc_vals)
 
 
-def compute_obj_metrics(folder_pred, folder_gt, num_processes: int, labels: Iterable[int]):
-    matches = compute_matches_folders(folder_pred, folder_gt, num_processes=num_processes)
+def compute_obj_metrics(folder_pred, folder_gt, num_processes: int, labels: Iterable[int], file_ending: str = '.nii.gz'):
+    matches = compute_matches_folders(folder_pred, folder_gt, num_processes=num_processes, file_ending=file_ending)
     all_obj_f1 = {i: object_level_f1(matches, i) for i in labels}
     all_tp_dice = {i: compute_dice_tp(matches, i) for i in labels}
     avg_obj_f1 = np.nanmean(list(all_obj_f1.values()))
@@ -70,20 +70,22 @@ if __name__ == '__main__':
     set_start_method('spawn')
 
     import argparse
-    parser = argparse.ArgumentParser("This script takes a folder containing nifti files with tooth predictions "
+    parser = argparse.ArgumentParser("This script takes a folder containing files with tooth predictions "
                                      "and evaluates them vs the "
                                      "reference. Tooth label matters!"
                                      "Metrics will be saved in metrics_obj.json in input folder\n"
                                      "Requires predicted and reference files to have the same shapes!")
     parser.add_argument('-i', type=str, required=True,
-                        help='Input folder. Must contain nifti files with tooth predictions (correct tooth labels!)')
+                        help='Input folder. Must contain files with tooth predictions (correct tooth labels!)')
     parser.add_argument('-ref', type=str, required=True,
                         help="Reference folder. Must contain files with the same name as the segmentations in -i.")
+    parser.add_argument('-fe', type=str, required=False, default='.nii.gz',
+                        help=f'File ending, Default: .nii.gz')
     parser.add_argument('-np', type=int, required=False, default=8,
                         help='Number of processes used for multiprocessing. Default: 8. Make this a lot higher if you '
                              'can!')
     args = parser.parse_args()
-    compute_obj_metrics(args.i, args.ref, num_processes=args.np, labels=list(range(1, 33)))
+    compute_obj_metrics(args.i, args.ref, num_processes=args.np, labels=list(range(1, 33)), file_ending=args.fe)
 
     # folders_pred = [
     #     # semantic segs

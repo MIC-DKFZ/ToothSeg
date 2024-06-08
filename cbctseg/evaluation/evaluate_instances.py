@@ -11,9 +11,9 @@ def load_fn(fname: str):
     return sitk.GetArrayFromImage(sitk.ReadImage(fname)).astype(np.uint8)
 
 
-def compute_matches_folders(folder_pred, folder_gt, num_processes: int = 6, overwrite = False):
+def compute_matches_folders(folder_pred, folder_gt, num_processes: int = 6, overwrite=False, file_ending: str = '.nii.gz'):
     if overwrite or not isfile(join(folder_pred, 'matches.pkl')):
-        files_pred = nifti_files(folder_pred, join=False)
+        files_pred = subfiles(folder_pred, join=False, suffix=file_ending)
         files_gt = [join(folder_gt, i) for i in files_pred]
         files_pred = [join(folder_pred, i) for i in files_pred]
         matches = compute_all_matches(files_gt, files_pred, load_fn, 0.1, consume_instances=True, num_processes=num_processes)
@@ -98,13 +98,13 @@ if __name__ == '__main__':
     set_start_method('spawn')
 
     import argparse
-    parser = argparse.ArgumentParser("This script takes a folder containing nifti files with instance predictions "
+    parser = argparse.ArgumentParser("This script takes a folder containing files with instance predictions "
                                      "(tooth label doesn't matter) and evaluates the quality of the instances vs the "
                                      "reference. Useful for measuring how well we recognize teeth in general."
                                      "Metrics will be saved in metrics_inst.json in input folder.\n"
                                      "Requires predicted and reference files to have the same shapes!")
     parser.add_argument('-i', type=str, required=True,
-                        help="Input folder. Must contain nifti files with instance predictions (tooth label doesn't "
+                        help="Input folder. Must contain files with instance predictions (tooth label doesn't "
                              "matter)")
     parser.add_argument('-ref', type=str, required=True,
                         help="Reference folder. Must contain files with the same name as the segmentations in -i.")
