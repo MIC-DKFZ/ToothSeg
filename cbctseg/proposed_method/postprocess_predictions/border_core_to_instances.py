@@ -12,10 +12,11 @@ import pandas as pd
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
                                 isolated_border_as_separate_instance_threshold=0.03, num_processes: int = 12,
-                                overwrite: bool = True, min_instance_size: float = 0):
+                                overwrite: bool = True, min_instance_size: float = 0,
+                                file_ending: str = '.nii.gz'):
     maybe_mkdir_p(output_folder)
 
-    input_files = nifti_files(border_core_seg_folder, join=False)
+    input_files = subfiles(border_core_seg_folder, join=False, suffix=file_ending)
     output_files = [join(output_folder, i) for i in input_files]
     input_files = [join(border_core_seg_folder, i) for i in input_files]
 
@@ -83,6 +84,8 @@ if __name__ == '__main__':
                         help=f'Isolated border predictions (no core) larger than this (volume) will be made a separate '
                              f'instance instead of being deleted. Default: '
                              f'{isolated_border_as_separate_instance_threshold_default}')
+    parser.add_argument('-fe', type=str, required=False, default='.nii.gz',
+                        help=f'File ending, Default: .nii.gz')
     parser.add_argument('-min_inst_size', type=float, required=False, default=small_center_threshold_default,
                         help=f'Minimum instance size (volume). Default: '
                              f'{min_instance_size_default}')
@@ -95,7 +98,8 @@ if __name__ == '__main__':
                                 small_center_threshold=args.sct,
                                 isolated_border_as_separate_instance_threshold=
                                 args.ibsi,
-                                num_processes=args.np, min_instance_size=args.min_inst_size)
+                                num_processes=args.np, min_instance_size=args.min_inst_size,
+                                file_ending=args.fe)
 
     #
     # folders_pred = [

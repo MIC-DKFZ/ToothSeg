@@ -49,48 +49,36 @@ def convert_sem_dataset_to_instance(
     p = Pool(num_processes)
     output_dir_base = join(nnUNet_raw, target_dataset_name)
     maybe_mkdir_p(join(output_dir_base, 'imagesTr'))
-    maybe_mkdir_p(join(output_dir_base, 'imagesTs'))
     maybe_mkdir_p(join(output_dir_base, 'labelsTr'))
-    maybe_mkdir_p(join(output_dir_base, 'labelsTs'))
-    source_cases = nifti_files(join(nnUNet_raw, source_dataset_name, 'labelsTr'), join=False)
-    r = []
-    for s in source_cases:
-        r.append(
-            p.starmap_async(
-                semseg_to_instanceseg,
-                ((
-                     join(nnUNet_raw, source_dataset_name, 'labelsTr', s),
-                     join(nnUNet_raw, target_dataset_name, 'labelsTr', s),
-                     border_thickness_in_mm
-                 ),)
-            )
-        )
-    source_cases_ts = nifti_files(join(nnUNet_raw, source_dataset_name, 'labelsTs'), join=False)
-    for s in source_cases_ts:
-        r.append(
-            p.starmap_async(
-                semseg_to_instanceseg,
-                ((
-                     join(nnUNet_raw, source_dataset_name, 'labelsTs', s),
-                     join(nnUNet_raw, target_dataset_name, 'labelsTs', s),
-                     border_thickness_in_mm
 
+    dataset = get_filenames_of_train_images_and_targets(join(nnUNet_raw, source_dataset_name))
+    dsj = load_json(join(nnUNet_raw, source_dataset_name, 'dataset.json'))
+    fe = dsj['file_ending']
+    r = []
+    for k in list(dataset.keys()):
+        r.append(
+            p.starmap_async(
+                semseg_to_instanceseg,
+                ((
+                     join(nnUNet_raw, source_dataset_name, 'labelsTr', k + fe),
+                     join(nnUNet_raw, target_dataset_name, 'labelsTr', k + fe),
+                     border_thickness_in_mm
                  ),)
             )
         )
+
     _ = [i.get() for i in r]
     p.close()
     p.join()
 
-    dataset = get_filenames_of_train_images_and_targets(join(nnUNet_raw, source_dataset_name))
     for k in dataset:
         dataset[k]['images'] = [os.path.join(os.pardir, source_dataset_name,
                                              os.path.relpath(i, join(nnUNet_raw, source_dataset_name)))
                                 for i in dataset[k]['images']]
         dataset[k]['label'] = os.path.relpath(dataset[k]['label'], join(nnUNet_raw, source_dataset_name))
 
-    generate_dataset_json(join(nnUNet_raw, target_dataset_name), {0: 'CT'}, {'background': 0, 'center': 1, 'border': 2},
-                          len(source_cases), '.nii.gz', target_dataset_name, dataset=dataset)
+    generate_dataset_json(join(nnUNet_raw, target_dataset_name), dsj["channel_names"], {'background': 0, 'center': 1, 'border': 2},
+                          len(dataset), fe, target_dataset_name, dataset=dataset)
 
 
 if __name__ == '__main__':

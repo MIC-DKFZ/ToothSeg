@@ -12,4 +12,4 @@ Instructions:
 2. Border-Core (instance) segmentations
    - first convert border-core representation to instances with border_core_to_instances.py
    - then convert back to original sizes with resize_predictions.py
-3. Bring it all together
+3. Bring it all together with assign_tooth_labels.py
