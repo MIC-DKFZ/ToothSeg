@@ -67,14 +67,16 @@ def resample_core(source_queue: Queue,
 
             # resample image
             target_shape = compute_new_shape(source_shape, list(source_spacing)[::-1], target_spacing)
-    
+
             print(f'{os.path.basename(target_label)}; source shape: {source_shape}, target shape {target_shape}')
+            seg_target_correct_labels = None
             try:
                 seg_target_correct_labels = \
                     resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                    num_threads=num_cpu_threads,
                                    device=torch.device('cuda:0'))[0].numpy()
             except:
+                del seg_target_correct_labels
                 seg_target_correct_labels = \
                     resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                    num_threads=num_cpu_threads,
@@ -87,12 +89,14 @@ def resample_core(source_queue: Queue,
             seg_target_itk.SetDirection(source_direction)
 
             # now resample images. For simplicity, just make this linear
+            im_source = None
             try:
                 im_source = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
                                    device=torch.device('cuda:0'))[0].numpy()
             except:
+                del im_source
                 im_source = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
