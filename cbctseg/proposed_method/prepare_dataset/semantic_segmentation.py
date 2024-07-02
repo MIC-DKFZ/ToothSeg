@@ -19,6 +19,7 @@ OVERWRITE_EXISTING = False
 
 
 def producer(image_fnames, seg_fnames, target_image, target_label, target_queue: Queue):
+    print('hi')
     for i, s, ti, tl in zip(image_fnames, seg_fnames, target_image, target_label):
         if not OVERWRITE_EXISTING and isfile(ti) and isfile(tl):
             continue
@@ -43,6 +44,7 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
         target_queue.put((im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl))
         del im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl
         gc.collect()
+    print('done')
     target_queue.put('end')
 
 
