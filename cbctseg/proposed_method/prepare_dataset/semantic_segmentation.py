@@ -128,7 +128,7 @@ def resample_core(source_queue: Queue,
 
 def convert_dataset(source_dir, target_name, target_spacing):
     pool = Pool(4)
-    num_processes_loading = 4
+    num_processes_loading = 1
 
     output_dir_base = join(nnUNet_raw, target_name)
     maybe_mkdir_p(join(output_dir_base, 'imagesTr'))
