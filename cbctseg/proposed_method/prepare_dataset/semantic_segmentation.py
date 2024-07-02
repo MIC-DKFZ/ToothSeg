@@ -50,6 +50,7 @@ def resample_core(source_queue: Queue,
                   export_pool: Pool,
                   target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3)):
     with torch.no_grad():
+        import IPython;IPython.embed()
         num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
         print(num_cpu_threads)
         r = []
