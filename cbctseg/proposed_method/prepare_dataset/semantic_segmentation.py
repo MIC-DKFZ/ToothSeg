@@ -104,6 +104,7 @@ def resample_core(source_queue: Queue,
         r1 = export_pool.starmap_async(sitk.WriteImage, ((im_target, target_image),))
         r2 = export_pool.starmap_async(sitk.WriteImage, ((seg_target_itk, target_label),))
         r.append((r1, r2))
+        del im_target, target_image, seg_target_itk, target_label, im_source, seg_source
     return r
 
 
