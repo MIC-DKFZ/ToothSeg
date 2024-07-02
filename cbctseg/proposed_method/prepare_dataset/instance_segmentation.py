@@ -60,8 +60,8 @@ def convert_sem_dataset_to_instance(
             p.starmap_async(
                 semseg_to_instanceseg,
                 ((
-                     join(nnUNet_raw, source_dataset_name, 'labelsTr', k + fe),
-                     join(nnUNet_raw, target_dataset_name, 'labelsTr', k + fe),
+                     dataset[k]['label'],
+                     join(nnUNet_raw, target_dataset_name, 'labelsTr', os.path.basename(dataset[k]['label'])),
                      border_thickness_in_mm
                  ),)
             )
