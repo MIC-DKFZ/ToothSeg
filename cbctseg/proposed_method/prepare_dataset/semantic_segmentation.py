@@ -49,66 +49,67 @@ def resample_core(source_queue: Queue,
                   num_workers: int,
                   export_pool: Pool,
                   target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3)):
-    num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
-    print(num_cpu_threads)
-    r = []
-    end_ctr = 0
-    while True:
-        item = source_queue.get()
-        if item == 'end':
-            end_ctr += 1
-            if end_ctr == num_workers:
-                break
-            continue
-        # print('get item')
-        im_source, seg_source, source_spacing, source_origin, source_direction, target_image, target_label = item
-        source_shape = im_source.shape
+    with torch.no_grad():
+        num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
+        print(num_cpu_threads)
+        r = []
+        end_ctr = 0
+        while True:
+            item = source_queue.get()
+            if item == 'end':
+                end_ctr += 1
+                if end_ctr == num_workers:
+                    break
+                continue
+            # print('get item')
+            im_source, seg_source, source_spacing, source_origin, source_direction, target_image, target_label = item
+            source_shape = im_source.shape
 
-        # resample image
-        target_shape = compute_new_shape(source_shape, list(source_spacing)[::-1], target_spacing)
+            # resample image
+            target_shape = compute_new_shape(source_shape, list(source_spacing)[::-1], target_spacing)
+    
+            print(f'{os.path.basename(target_label)}; source shape: {source_shape}, target shape {target_shape}')
+            try:
+                seg_target_correct_labels = \
+                    resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
+                                   num_threads=num_cpu_threads,
+                                   device=torch.device('cuda:0'))[0].numpy()
+            except:
+                seg_target_correct_labels = \
+                    resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
+                                   num_threads=num_cpu_threads,
+                                   device=torch.device('cpu'))[0].numpy()
+            torch.cuda.empty_cache()
 
-        print(f'{os.path.basename(target_label)}; source shape: {source_shape}, target shape {target_shape}')
-        try:
-            seg_target_correct_labels = \
-                resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
-                               num_threads=num_cpu_threads,
-                               device=torch.device('cuda:0'))[0].numpy()
-        except:
-            seg_target_correct_labels = \
-                resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
-                               num_threads=num_cpu_threads,
-                               device=torch.device('cpu'))[0].numpy()
-        torch.cuda.empty_cache()
+            seg_target_itk = sitk.GetImageFromArray(seg_target_correct_labels)
+            seg_target_itk.SetSpacing(tuple(list(target_spacing)[::-1]))
+            seg_target_itk.SetOrigin(source_origin)
+            seg_target_itk.SetDirection(source_direction)
 
-        seg_target_itk = sitk.GetImageFromArray(seg_target_correct_labels)
-        seg_target_itk.SetSpacing(tuple(list(target_spacing)[::-1]))
-        seg_target_itk.SetOrigin(source_origin)
-        seg_target_itk.SetDirection(source_direction)
+            # now resample images. For simplicity, just make this linear
+            try:
+                im_source = \
+                    resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
+                                   num_threads=num_cpu_threads,
+                                   device=torch.device('cuda:0'))[0].numpy()
+            except:
+                im_source = \
+                    resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
+                                   num_threads=num_cpu_threads,
+                                   device=torch.device('cpu'))[0].numpy()
+            torch.cuda.empty_cache()
 
-        # now resample images. For simplicity, just make this linear
-        try:
-            im_source = \
-                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
-                               num_threads=num_cpu_threads,
-                               device=torch.device('cuda:0'))[0].numpy()
-        except:
-            im_source = \
-                resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
-                               num_threads=num_cpu_threads,
-                               device=torch.device('cpu'))[0].numpy()
-        torch.cuda.empty_cache()
+            # export image
+            im_target = sitk.GetImageFromArray(im_source)
+            im_target.SetSpacing(tuple(list(target_spacing)[::-1]))
+            im_target.SetOrigin(source_origin)
+            im_target.SetDirection(source_direction)
 
-        # export image
-        im_target = sitk.GetImageFromArray(im_source)
-        im_target.SetSpacing(tuple(list(target_spacing)[::-1]))
-        im_target.SetOrigin(source_origin)
-        im_target.SetDirection(source_direction)
-
-        r1 = export_pool.starmap_async(sitk.WriteImage, ((im_target, target_image),))
-        r2 = export_pool.starmap_async(sitk.WriteImage, ((seg_target_itk, target_label),))
-        r.append((r1, r2))
-        del im_target, target_image, seg_target_itk, target_label, im_source, seg_source
-        gc.collect()
+            r1 = export_pool.starmap_async(sitk.WriteImage, ((im_target, target_image),))
+            r2 = export_pool.starmap_async(sitk.WriteImage, ((seg_target_itk, target_label),))
+            r.append((r1, r2))
+            del im_target, target_image, seg_target_itk, target_label, im_source, seg_source
+            gc.collect()
     return r
 
 
