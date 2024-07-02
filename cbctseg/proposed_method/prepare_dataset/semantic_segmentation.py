@@ -48,7 +48,7 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
 def resample_core(source_queue: Queue,
                   num_workers: int,
                   export_pool: Pool,
-                  target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3)):
+                  target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3), processes=None):
     with torch.no_grad():
         import IPython;IPython.embed()
         num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
@@ -60,6 +60,7 @@ def resample_core(source_queue: Queue,
             if item == 'end':
                 end_ctr += 1
                 if end_ctr == num_workers:
+                    print('done')
                     break
                 continue
             # print('get item')
@@ -177,7 +178,7 @@ def convert_dataset(source_dir, target_name, target_spacing):
         processes.append(
             pr
         )
-    r = resample_core(q, num_processes_loading, export_pool=pool, target_spacing=target_spacing)
+    r = resample_core(q, num_processes_loading, export_pool=pool, target_spacing=target_spacing, processes=processes)
 
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
