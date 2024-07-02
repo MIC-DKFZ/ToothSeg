@@ -1,3 +1,4 @@
+import gc
 import shutil
 from multiprocessing import Pool, Queue, Process, set_start_method, cpu_count
 from time import time
@@ -39,6 +40,8 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
 
         seg_source = sitk.GetArrayFromImage(seg_source).astype(np.uint8)
         target_queue.put((im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl))
+        del im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl
+        gc.collect()
     target_queue.put('end')
 
 
@@ -105,6 +108,7 @@ def resample_core(source_queue: Queue,
         r2 = export_pool.starmap_async(sitk.WriteImage, ((seg_target_itk, target_label),))
         r.append((r1, r2))
         del im_target, target_image, seg_target_itk, target_label, im_source, seg_source
+        gc.collect()
     return r
 
 
@@ -168,6 +172,12 @@ def convert_dataset(source_dir, target_name, target_spacing):
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
     shutil.copy(join(source_dir, 'dataset.json'), join(output_dir_base, 'dataset.json'))
+
+    for p in processes:
+        p.join()
+    pool.close()
+    pool.join()
+    q.close()
 
 
 if __name__ == '__main__':
