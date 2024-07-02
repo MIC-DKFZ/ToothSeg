@@ -22,6 +22,7 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
     for i, s, ti, tl in zip(image_fnames, seg_fnames, target_image, target_label):
         if not OVERWRITE_EXISTING and isfile(ti) and isfile(tl):
             continue
+        print(f'loading {os.path.basename(i)}')
         im_source = sitk.ReadImage(i)
         seg_source = sitk.ReadImage(s)
 
@@ -50,7 +51,6 @@ def resample_core(source_queue: Queue,
                   export_pool: Pool,
                   target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3), processes=None):
     with torch.no_grad():
-        import IPython;IPython.embed()
         num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
         print(num_cpu_threads)
         r = []
@@ -183,7 +183,6 @@ def convert_dataset(source_dir, target_name, target_spacing):
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
     shutil.copy(join(source_dir, 'dataset.json'), join(output_dir_base, 'dataset.json'))
-    import IPython;IPython.embed()
     for p in processes:
         p.join()
     pool.close()
