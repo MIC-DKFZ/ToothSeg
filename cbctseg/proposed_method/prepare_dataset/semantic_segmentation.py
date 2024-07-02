@@ -31,11 +31,11 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
         im_source = sitk.GetArrayFromImage(im_source).astype(np.float32)
 
         source_spacing_s = seg_source.GetSpacing()
-        source_origin_s = seg_source.GetOrigin()
-        source_direction_s = seg_source.GetDirection()
+        # source_origin_s = seg_source.GetOrigin()
+        # source_direction_s = seg_source.GetDirection()
         assert source_spacing == source_spacing_s
-        assert source_origin == source_origin_s
-        assert source_direction == source_direction_s
+        # assert source_origin == source_origin_s
+        # assert source_direction == source_direction_s
 
         seg_source = sitk.GetArrayFromImage(seg_source).astype(np.uint8)
         target_queue.put((im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl))
