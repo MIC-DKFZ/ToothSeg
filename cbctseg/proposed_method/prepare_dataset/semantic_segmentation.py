@@ -21,6 +21,7 @@ OVERWRITE_EXISTING = False
 def producer(image_fnames, seg_fnames, target_image, target_label, target_queue: Queue):
     print('hi')
     for i, s, ti, tl in zip(image_fnames, seg_fnames, target_image, target_label):
+        print(f'{os.path.basename(i)}')
         if not OVERWRITE_EXISTING and isfile(ti) and isfile(tl):
             continue
         print(f'loading {os.path.basename(i)}')
