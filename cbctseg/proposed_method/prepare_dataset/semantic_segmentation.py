@@ -89,22 +89,22 @@ def resample_core(source_queue: Queue,
             seg_target_itk.SetDirection(source_direction)
 
             # now resample images. For simplicity, just make this linear
-            im_source = None
+            im_target = None
             try:
-                im_source = \
+                im_target = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
                                    device=torch.device('cuda:0'))[0].numpy()
             except:
-                del im_source
-                im_source = \
+                del im_target
+                im_target = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
                                    device=torch.device('cpu'))[0].numpy()
             torch.cuda.empty_cache()
 
             # export image
-            im_target = sitk.GetImageFromArray(im_source)
+            im_target = sitk.GetImageFromArray(im_target)
             im_target.SetSpacing(tuple(list(target_spacing)[::-1]))
             im_target.SetOrigin(source_origin)
             im_target.SetDirection(source_direction)
