@@ -185,7 +185,10 @@ def convert_dataset(source_dir, target_name, target_spacing):
 
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
-    shutil.copy(join(source_dir, 'dataset.json'), join(output_dir_base, 'dataset.json'))
+
+    del dsj['dataset']
+    save_json(dsj, join(output_dir_base, 'dataset.json'), sort_keys=False)
+
     for p in processes:
         p.join()
     pool.close()
