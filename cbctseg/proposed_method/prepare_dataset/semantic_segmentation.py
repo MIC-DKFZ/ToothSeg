@@ -74,13 +74,15 @@ def resample_core(source_queue: Queue,
                 seg_target_correct_labels = \
                     resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                    num_threads=num_cpu_threads,
-                                   device=torch.device('cuda:0'))[0].numpy()
+                                   device=torch.device('cuda:0'))[0]
+                seg_target_correct_labels = seg_target_correct_labels.cpu().numpy()
             except:
                 del seg_target_correct_labels
                 seg_target_correct_labels = \
                     resample_torch_simple(torch.from_numpy(seg_source)[None], target_shape, is_seg=True,
                                    num_threads=num_cpu_threads,
-                                   device=torch.device('cpu'))[0].numpy()
+                                   device=torch.device('cpu'))[0]
+                seg_target_correct_labels = seg_target_correct_labels.cpu().numpy()
             torch.cuda.empty_cache()
 
             seg_target_itk = sitk.GetImageFromArray(seg_target_correct_labels)
@@ -94,13 +96,15 @@ def resample_core(source_queue: Queue,
                 im_target = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
-                                   device=torch.device('cuda:0'))[0].numpy()
+                                   device=torch.device('cuda:0'))[0]
+                im_target = im_target.cpu().numpy()
             except:
                 del im_target
                 im_target = \
                     resample_torch_simple(torch.from_numpy(im_source)[None], target_shape, is_seg=False,
                                    num_threads=num_cpu_threads,
-                                   device=torch.device('cpu'))[0].numpy()
+                                   device=torch.device('cpu'))[0]
+                im_target = im_target.cpu().numpy()
             torch.cuda.empty_cache()
 
             # export image
