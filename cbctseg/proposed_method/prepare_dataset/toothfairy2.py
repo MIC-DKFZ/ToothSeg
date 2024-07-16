@@ -32,28 +32,4 @@ if __name__ == '__main__':
         num_processes=96
     )
 
-    # this is for our participation in the challenge. We know that the test set will be spacing 0.4 (this is official
-    # information) so there is no point in using higher spacings.
-    convert_dataset(source_dir,
-                    f'Dataset124_ToothFairy2fixed_teeth_spacing04',
-                    (0.4, 0.4, 0.4),
-                    4,
-                    4)
-
-    # given the higher spacing we don't know what border thickness is going to be good. Needs to be retuned.
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(124),
-        'Dataset125_ToothFairy2fixed_teeth_spacing04_brd2px',
-        0.4,
-        2,
-        num_processes=96
-    )
-
-    convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(124),
-        'Dataset126_ToothFairy2fixed_teeth_spacing04_brd3px',
-        0.4,
-        3,
-        num_processes=96
-    )
 
