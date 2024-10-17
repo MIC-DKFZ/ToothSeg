@@ -4,14 +4,10 @@ from nnunetv2.dataset_conversion.Dataset119_ToothFairy2_All import process_ds, m
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
-from toothseg.proposed_method.prepare_dataset.instance_segmentation import convert_sem_dataset_to_instance
-from toothseg.proposed_method.prepare_dataset.semantic_segmentation import convert_dataset
+from toothseg.datasets.inhouse_dataset.instance_segmentation_branch_data import convert_sem_dataset_to_instance
+from toothseg.datasets.inhouse_dataset.semantic_segmentation_branch_data import convert_dataset
 
 if __name__ == '__main__':
-    # We start with nnU-Net
-    # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw'
-    # export nnUNet_raw=/omics/groups/OE0441/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw
-
     DOWNLOADED_TOOTHFAIRY2_DIR = ''  # this must be dataset 112
     # Different nnUNet Datasets
     # Dataset 112: Raw
@@ -44,5 +40,7 @@ if __name__ == '__main__':
         3,
         num_processes=96
     )
-
+    # just here for our convenience
+    # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw'
+    # export nnUNet_raw=/omics/groups/OE0441/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw
 
