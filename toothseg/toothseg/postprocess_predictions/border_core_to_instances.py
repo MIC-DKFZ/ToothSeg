@@ -8,7 +8,7 @@ from acvl_utils.instance_segmentation.instance_as_semantic_seg import convert_se
     postprocess_instance_segmentation
 import pandas as pd
 
-from cbctseg.process_raw_data.utils import copy_geometry
+from toothseg.process_raw_data.utils import copy_geometry
 
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,

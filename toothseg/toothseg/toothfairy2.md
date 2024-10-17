@@ -43,18 +43,18 @@ NNUNET_TRAINING_INSTSEG=${INSTSEG_TRAINER}__nnUNetPlans__${INSTSEG_CONFIG}
 NNUNET_TRAINING_SEMSEG=${SEMSEG_TRAINER}__nnUNetPlans__${SEMSEG_CONFIG}
 
 # border core to instance
-python ${CODE_PATH}/cbctseg/proposed_method/postprocess_predictions/border_core_to_instances.py \
+python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/border_core_to_instances.py \
 -i ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation \
 -o ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_instances \
 -np 64
 # resize border core to ref
-python ${CODE_PATH}/cbctseg/proposed_method/postprocess_predictions/resize_predictions.py \
+python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/resize_predictions.py \
 -i ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_instances \
 -o ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_instances_resized \
 -ref ${REF_FOLDER_RESAMPLING} -np 64
 
 # apply tooth labels
-python ${CODE_PATH}/cbctseg/proposed_method/postprocess_predictions/assign_tooth_labels.py \
+python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_tooth_labels.py \
 -ifolder ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_instances_resized \
 -sfolder ${nnUNet_results}/${SEMSEG_DATASET_NAME}/${NNUNET_TRAINING_SEMSEG}/fold_5/validation \
 -o ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_final_predictions_merged \
@@ -62,20 +62,20 @@ python ${CODE_PATH}/cbctseg/proposed_method/postprocess_predictions/assign_tooth
 
 # evaluate
 # full eval with tooth labels
-python ${CODE_PATH}/cbctseg/evaluation/evaluate_instances_with_tooth_label.py \
+python ${CODE_PATH}/toothseg/evaluation/evaluate_instances_with_tooth_label.py \
 -i ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_final_predictions_merged \
 -ref ${nnUNet_raw}/${SEMSEG_DATASET_NAME}/labelsTr -np 64
 # instances only
-python ${CODE_PATH}/cbctseg/evaluation/evaluate_instances.py \
+python ${CODE_PATH}/toothseg/evaluation/evaluate_instances.py \
 -i ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_final_predictions_merged \
 -ref ${nnUNet_raw}/${SEMSEG_DATASET_NAME}/labelsTr -np 64
 
 # just the semseg for comparison
-python ${CODE_PATH}/cbctseg/evaluation/evaluate_instances_with_tooth_label.py \
+python ${CODE_PATH}/toothseg/evaluation/evaluate_instances_with_tooth_label.py \
 -i ${nnUNet_results}/${SEMSEG_DATASET_NAME}/${NNUNET_TRAINING_SEMSEG}/fold_5/validation \
 -ref ${nnUNet_raw}/${SEMSEG_DATASET_NAME}/labelsTr -np 64
 # instances only
-python ${CODE_PATH}/cbctseg/evaluation/evaluate_instances.py \
+python ${CODE_PATH}/toothseg/evaluation/evaluate_instances.py \
 -i ${nnUNet_results}/${SEMSEG_DATASET_NAME}/${NNUNET_TRAINING_SEMSEG}/fold_5/validation \
 -ref ${nnUNet_raw}/${SEMSEG_DATASET_NAME}/labelsTr -np 64
 ```

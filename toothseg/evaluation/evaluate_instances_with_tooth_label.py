@@ -3,7 +3,7 @@ from typing import Tuple, Iterable
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
 
-from cbctseg.evaluation.evaluate_instances import compute_matches_folders
+from toothseg.evaluation.evaluate_instances import compute_matches_folders
 
 
 def object_level_f1(matches: List[Tuple], label: int) -> float:

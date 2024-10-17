@@ -3,8 +3,8 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
-from cbctseg.proposed_method.prepare_dataset.instance_segmentation import convert_sem_dataset_to_instance
-from cbctseg.proposed_method.prepare_dataset.semantic_segmentation import convert_dataset
+from toothseg.proposed_method.prepare_dataset.instance_segmentation import convert_sem_dataset_to_instance
+from toothseg.proposed_method.prepare_dataset.semantic_segmentation import convert_dataset
 
 if __name__ == '__main__':
     # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw'

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.generate_dataset_json import generate_dataset_json
 
-from cbctseg.process_raw_data.utils import (
+from toothseg.inhouse_dataset.utils import (
     psg_to_npa,
     convert_label_ISO_to_continious,
     convert_ISO_to_continious,

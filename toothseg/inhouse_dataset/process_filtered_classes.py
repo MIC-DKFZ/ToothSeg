@@ -8,7 +8,7 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.generate_dataset_json import generate_dataset_json
 from tqdm import tqdm
 
-from cbctseg.process_raw_data.utils import copy_geometry
+from toothseg.inhouse_dataset.utils import copy_geometry
 
 
 def process_label(input_label, input_img, output_label, output_img):
