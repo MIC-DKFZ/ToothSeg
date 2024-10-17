@@ -1,0 +1,54 @@
+work_dir: '/home/mkaailab/Documents/logs/liunet'
+version: 3
+seed: 0
+
+datamodule:
+  root: '/mnt/diag/CBCT/tooth_segmentation/data'
+  # root: '/mnt/diag/CBCT/tooth_segmentation/commercial/Test_Data'
+  # scan_dir: 'Dataset164_Filtered_Classes/imagesTs'
+  scan_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Teeth_Dataset/imagesTs'
+  # scan_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Teeth_Dataset/imagesTs'
+  # scan_dir: 'cbcts'
+  # seg_dir: 'Dataset164_All_Classes/labelsTr'
+  seg_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Jaws_Dataset/labelsTr'
+  instances_dir: ''
+  cache_dir: '/home/mkaailab/Documents/CBCT/baselines/data'
+  regular_spacing: 0.4
+  norm_clip: null
+  norm_method: 'standard'
+  crop_size: [160, 96, 160]
+  regex_filter: 'guinna-'  # sharp derivative
+  regex_filter: 'laure-'  # multimodal
+  regex_filter: 'rosalind-'  # bad bell shape
+  regex_filter: 'shara-'
+  regex_filter: ''
+  exclude: []
+  val_size: 0.1
+  include_val_as_train: True
+  test_size: 0.0
+  batch_size: 2
+  num_workers: 8
+  persistent_workers: False
+  pin_memory: False
+  pre_transform: ['HistogramNormalize']
+  aug_transform: ['RandomXAxisFlip', 'RandomMaskOut']
+  transform: []
+  binary:
+    transform: ['RandomCrop']
+  instances:
+    instances_dir: 'binaryPr'
+    transform: ['RandomCrop', 'FDIAsClass']
+  
+model:
+  crop_size: [160, 96, 160]
+  crop_stride: [80, 48, 80]
+  x_axis_flip: True
+  return_type: 'iso'  # 11-48, or 'iso' for 1-32
+  lr: 0.0005
+  use_scheduler: false
+  weight_decay: 0.00001
+  epochs: 1000
+  binary:
+    pretrained: 'checkpoints_toothfairy2/liunet_binary.ckpt'
+  instances:
+    pretrained: 'checkpoints_toothfairy2/liunet_instances.ckpt'

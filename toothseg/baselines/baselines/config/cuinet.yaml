@@ -1,0 +1,115 @@
+work_dir: '/home/mkaailab/Documents/logs/cuinet'
+version: 14
+seed: 0
+
+datamodule:
+  root: '/mnt/diag/CBCT/tooth_segmentation/data'
+  # scan_dir: 'cbcts'
+  scan_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Teeth_Dataset/imagesTs'
+  # seg_dir: 'Dataset164_All_Classes/labelsTr'
+  seg_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Jaws_Dataset/labelsTr'
+  # seg_dir: 'Dataset164_All_Classes/labelsTr'
+  instances_dir: ''
+  cache_dir: '/home/mkaailab/Documents/CBCT/baselines/data'
+  regular_spacing: 0.4
+  norm_clip: [0, 2500]
+  norm_method: 'unit'
+  crop_size: 256
+  patch_size: 96
+  regex_filter: 'janna-silent'  # large FOV
+  regex_filter: 'agnesse-brainy-wildcat'  # empty segmentation
+  regex_filter: 'beatrisa'  # only small root remnants
+  regex_filter: ''
+  exclude: []
+  val_size: 0.1
+  include_val_as_train: true
+  test_size: 0.0
+  batch_size: 2
+  num_workers: 20
+  persistent_workers: True
+  pin_memory: False
+  pre_transform: []
+  aug_transform: ['RandomXAxisFlip']
+  transform: []
+  roi:
+    transform: ['RandomCrop']
+  centroids:
+    instances_dir: 'roiPr'
+    pre_transform: ['VOICrop', 'ToothCentroidOffsets']
+  skeletons:
+    instances_dir: 'roiPr'
+    pre_transform: ['VOICrop', 'ToothSkeletonOffsets']
+  single_tooth:
+    instances_dir: ['masksPr', 'centroidsPr', 'skeletonsPr']
+    pre_transform: ['ToothBoundaries', 'ToothRootKeypoints', 'MatchPredToGTInstances', 'ToothPatches']
+    transform: ['RandomPatches', 'FDIAsClass']
+    sigma: 3.0
+    max_patches: 4
+  
+model:
+  crop_size: 256
+  crop_stride: 128
+  patch_size: 96
+  x_axis_flip: True
+  sigma: 3.0
+  score_thr: 0.5
+  return_type: 'iso'  # 11-48, or 'iso' for 1-32
+  roi:
+    lr: 0.001
+    epochs: 400
+    use_scheduler: false
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/cuinet_roi.ckpt'
+    architecture:
+      encoder_channels: [16, 32, 32, 64, 64, 128, 128, 256, 256]
+      decoder_channels: [128, 128, 64, 64, 32, 32, 16, 16]
+      encoder_depths: [1, 2, 3, 3, 3]
+      decoder_depths: [3, 3, 2, 1]
+      encoder_dropout: True
+      decoder_dropout: True
+  centroids:
+    lr: 0.001
+    epochs: 1000
+    use_scheduler: false
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/cuinet_centroids.ckpt'
+    architecture:
+      in_channels: 2
+      encoder_channels: [8, 16, 32, 64, 64, 128, 128, 256, 256]
+      decoder_channels: [128, 128, 64, 64, 32, 16, 8, 0]
+      encoder_depths: [1, 2, 3, 3, 3]
+      decoder_depths: [3, 3, 2, 0]
+      out_channels: [1, 3]
+      shared_blocks: 4
+      encoder_dropout: True
+  skeletons:
+    lr: 0.001
+    epochs: 100
+    use_scheduler: false
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/cuinet_skeletons.ckpt'
+    architecture:
+      in_channels: 2
+      encoder_channels: [8, 16, 32, 64, 64, 128, 128, 256, 256]
+      decoder_channels: [128, 128, 64, 64, 32, 16, 8, 0]
+      encoder_depths: [1, 2, 3, 3, 3]
+      decoder_depths: [3, 3, 2, 0]
+      out_channels: [1, 3]
+      shared_blocks: 4
+      encoder_dropout: True
+  single_tooth:
+    lr: 0.001
+    epochs: 155
+    use_scheduler: false
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/cuinet_single_tooth.ckpt'
+    architecture:
+      in_channels: 3
+      latent_channels: 32
+      encoder_channels: [32, 32, 64, 128, 128, 256, 256, 512, 512]
+      decoder_channels: [256, 256, 128, 128, 64, 64, 32, 0]
+      encoder_depths: [1, 2, 3, 3, 3]
+      decoder_depths: [3, 3, 2, 0]
+      out_channels: [1, 1, 1]
+      shared_blocks: 3
+    

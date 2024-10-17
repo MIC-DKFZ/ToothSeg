@@ -1,0 +1,84 @@
+work_dir: '/home/mkaailab/Documents/logs/wangnet'
+version: 13
+seed: 0
+
+datamodule:
+  root: '/mnt/diag/CBCT/tooth_segmentation/data'
+  # scan_dir: 'Dataset164_Filtered_Classes/imagesTs'
+  # scan_dir: 'cbcts'
+  scan_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Teeth_Dataset/imagesTs'
+  # seg_dir: 'Dataset164_All_Classes/labelsTr'
+  seg_dir: 'ToothFairy2_Dataset_Lars/Split_Dataset/ToothFairy2_Jaws_Dataset/labelsTr'
+  instances_dir: ''
+  cache_dir: '/home/mkaailab/Documents/CBCT/baselines/data'
+  regular_spacing: 0.3
+  norm_clip: [0, 4095]
+  norm_method: 'unit'
+  crop_size: [288, 256, 256]
+  patch_size: [80, 80, 128]
+  regex_filter: 'janna-silent'  # large FOV
+  regex_filter: 'agnesse-brainy-wildcat'  # empty segmentation
+  regex_filter: 'beatrisa'  # only small root remnants
+  regex_filter: ''
+  exclude: []
+  val_size: 0.1
+  include_val_as_train: True
+  test_size: 0.0
+  batch_size: 2
+  num_workers: 8
+  persistent_workers: True
+  pin_memory: False
+  pre_transform: []
+  aug_transform: ['RandomXAxisFlip']
+  transform: []
+  instances:
+    regular_spacing: 0.6
+    crop_size: [144, 128, 128]
+    transform: ['RandomTeethCrop', 'FDIAsClass']
+    exclude: [  # train scans with wrong spacing
+      'ninnetta-vulnerable-tyrannosaurus', 'blinnie-related-aardwolf', 'samaria-great-asp', 'gerianne-underlying-pig',
+    ]
+  single_tooth:
+    instances_dir: 'dentalnetPr'
+    pre_transform: ['MatchPredToGTInstances', 'ToothPatches']
+    transform: ['RandomPatches']
+    max_patches: 4
+  
+model:
+  crop_size: [144, 128, 128]
+  crop_stride: [72, 64, 64]
+  patch_size: [80, 80, 128]
+  batch_size: 4
+  x_axis_flip: True
+  score_thr: 0.5
+  return_type: 'iso'  # 11-48, or 'iso' for 1-32
+  instances:
+    crop_size: [144, 128, 128]
+    lr: 0.0005  # 0.0001, 0.0002, 0.001 worse
+    epochs: 620
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/wangnet_instances.ckpt'
+    out_channels: [6, 1, null]
+    voxel_size: 0.001
+    min_seed_score: 0.9
+    min_cluster_size: 128
+    min_unclustered: 0.35
+    num_filters: 32  # 16 worse
+    loss:
+      spatial_embedding:
+        learn_center: True  # False worse
+        learn_ellipsoid: True  # False worse
+        w_foreground: 1.0  # 10.0 worse
+        w_instance: 1.0
+        w_smooth: 10.0  # 1.0 worse
+        w_seed: 10.0  # 1.0 worse
+      identify:
+        w_ce: 1.0
+        w_focal: 1.0
+        w_homo: 1.0
+  single_tooth:
+    lr: 0.0001
+    epochs: 320
+    weight_decay: 0.0001
+    pretrained: 'checkpoints_toothfairy2/wangnet_single_tooth.ckpt'
+    out_channels: 1
