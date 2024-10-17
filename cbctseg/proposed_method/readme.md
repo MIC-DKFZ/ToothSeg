@@ -1,27 +1,15 @@
 This folder contains all the information necessary to reproduce the results of the proposed method
 
-1) run the scripts located in [prepare_datasets](prepare_dataset)
-2) then run nnU-Net planning and preprocessing
-3) then train
-4) then
+# Prepare the internal dataset and the Toothfairy2 Dataset
+TODO
 
+# Fingerprint extraction and preprocessing
+nnUNetv2_extract_fingerprint -d 181 188 -np 64
+nnUNetv2_plan_experiment -d 181 188
 
-nnUNetv2_extract_fingerprint -d 164 181 182 183 184 185 186 187 188 -np 64
-nnUNetv2_plan_experiment -d 164 181 182 183 184 185 186 187 188
-nnUNetv2_preprocess -d 164 -c 3d_fullres_resample_torch 3d_lowres_resample_torch -np 64
-nnUNetv2_preprocess -d 181 182 183 184 185 186 187 188 -c 3d_fullres_resample_torch_128 -np 64
-
-
-```bash
-conda deactivate
-source ~/load_env_torch210.sh
-CUDA_VISIBLE_DEVICES=0,1,2,5 nnUNet_def_n_proc=4 nnUNetv2_train 181 3d_fullres_resample_torch_192_bs8 0 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -num_gpus 4
-```
-
-# Semantic Segmentation plans
+# Add the following configurations to your semantic segmentation plans (Dataset181)
 
 ```json
-,
         "3d_fullres_resample_torch_256_bs8": {
             "inherits_from": "3d_fullres",
             "data_identifier": "nnUNetPlans_3d_fullres_resample_torch",
@@ -151,13 +139,10 @@ CUDA_VISIBLE_DEVICES=0,1,2,5 nnUNet_def_n_proc=4 nnUNetv2_train 181 3d_fullres_r
                 ]
         ]
         }
-
 ```
 
-# Instance Segmentation Plans
+# Add the following configurations to your semantic segmentation plans (Dataset181)
 ```json
-
-,
         "3d_fullres_resample_torch_192_bs8": {
             "inherits_from": "3d_fullres",
             "data_identifier": "nnUNetPlans_3d_fullres_resample_torch",
@@ -276,3 +261,20 @@ CUDA_VISIBLE_DEVICES=0,1,2,5 nnUNet_def_n_proc=4 nnUNetv2_train 181 3d_fullres_r
             ]
         }
 ```
+
+# Preprocessing
+```bash
+nnUNetv2_preprocess -d 181 -c 3d_fullres_resample_torch_256_bs8 -np 64
+nnUNetv2_preprocess -d 188 -c 3d_fullres_resample_torch_192_bs8 -np 64
+```
+
+# Training
+
+## Internal dataset
+```bash
+# semantic branch
+nnUNetv2_train 181 3d_fullres_resample_torch_256_bs8 all -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -num_gpus 4
+# instance branch
+nnUNetv2_train 188 3d_fullres_resample_torch_192_bs8 all -tr nnUNetTrainer -num_gpus 4
+```
+
