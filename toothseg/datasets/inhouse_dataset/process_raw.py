@@ -1,18 +1,16 @@
 import glob
-import os
 import shutil
 from multiprocessing import Pool
 
 import pydicom
 import numpy as np
-import nibabel as nib
 import SimpleITK as sitk
 from tqdm import tqdm
 
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.generate_dataset_json import generate_dataset_json
 
-from toothseg.inhouse_dataset.utils import (
+from toothseg.datasets.inhouse_dataset.utils import (
     psg_to_npa,
     convert_label_ISO_to_continious,
     convert_ISO_to_continious,

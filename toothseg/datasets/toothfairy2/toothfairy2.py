@@ -1,5 +1,6 @@
 from multiprocessing import set_start_method
 from batchgenerators.utilities.file_and_folder_operations import *
+from nnunetv2.dataset_conversion.Dataset119_ToothFairy2_All import process_ds, mapping_DS121
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
@@ -7,8 +8,20 @@ from toothseg.proposed_method.prepare_dataset.instance_segmentation import conve
 from toothseg.proposed_method.prepare_dataset.semantic_segmentation import convert_dataset
 
 if __name__ == '__main__':
+    # We start with nnU-Net
     # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw'
     # export nnUNet_raw=/omics/groups/OE0441/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw
+
+    DOWNLOADED_TOOTHFAIRY2_DIR = ''  # this must be dataset 112
+    # Different nnUNet Datasets
+    # Dataset 112: Raw
+    # Dataset 119: Replace NaN classes
+    # Dataset 120: Only Teeth + Jaw Classes
+    # Dataset 121: Only Teeth Classes
+
+    # Dataset 121 has only the teeth and disregards the other classes we are not interested in
+    process_ds(DOWNLOADED_TOOTHFAIRY2_DIR, "Dataset112_ToothFairy2", "Dataset121_ToothFairy2_Teeth", mapping_DS121(), None)
+
     set_start_method('spawn')
     source_dataset = maybe_convert_to_dataset_name(121)
     source_dir = join(nnUNet_raw, source_dataset)

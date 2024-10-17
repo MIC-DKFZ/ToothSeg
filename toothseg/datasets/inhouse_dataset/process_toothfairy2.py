@@ -133,7 +133,7 @@ def process_ds(
         base_name = [file.replace("_0000.mha", "") for file in img_files]
         for name in base_name:
             dataset[name] = {
-                "images": [join("..", image_link, "imagesTr", name + "_0000.nii.gz")],
+                "images": [join("../..", image_link, "imagesTr", name + "_0000.nii.gz")],
                 "label": join("labelsTr", name + ".nii.gz"),
             }
 
