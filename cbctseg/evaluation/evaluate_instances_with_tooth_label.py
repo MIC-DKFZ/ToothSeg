@@ -43,21 +43,65 @@ def compute_dice_tp(matches: List[Tuple], label: int) -> float:
                 dc_vals.append(mi[2])
     return np.mean(dc_vals)
 
+def count_classes(matches:List[Tuple],num_classes:int,index=0):
+    """
+    count how often each class occurs in the given matches
+    """
+    counts = np.zeros(num_classes,dtype=int)
+    for case in matches:
+        ids = [c[index]-1 for c in case if c[index] is not None] # due to bg class we start at 1
+        counts[ids] += 1
+    return counts
+
+def count_class(matches:List[Tuple],label:int,index:int):
+    """
+    count how often each class occurs in the given matches
+    index==0: count GT
+    index==1: count Pred
+    """
+    count = 0
+    for m in matches:
+        for mi in m:
+            if mi[index] == label:
+                count += 1
+    return count
 
 def compute_obj_metrics(folder_pred, folder_gt, num_processes: int, labels: Iterable[int], file_ending: str = '.nii.gz'):
+    # Find Matches between GT and Pred
     matches = compute_matches_folders(folder_pred, folder_gt, num_processes=num_processes, file_ending=file_ending)
+    # Count how often a class appears in GT and Prediction
+    all_count_gt = {i:count_class(matches,i,0)for i in labels}
+    all_count_pred ={i:count_class(matches,i,1)for i in labels}
+    # Compute Metric - objF1 and TPDice
     all_obj_f1 = {i: object_level_f1(matches, i) for i in labels}
     all_tp_dice = {i: compute_dice_tp(matches, i) for i in labels}
+    # Correct Metric for FN and FP
+    for i in labels:
+        # TN: (!inGT & !inP) == (TPDice == NaN & F1 == NaN)    --> TP = NaN, F1=NaN     --> PDice=NaN
+        # FN: ( inGT & !inP) == (TPDice == NaN & F1 == 0)      --> TP = 0,   F1=0       --> PDice=0
+        # TP: ( inGT &  inP) == (TPDice == X   & F1 == Y)      --> TP = X,   F1 = Y     --> PDice=X*Y
+        # FP: (!inGT &  inP) == (TPDice == NaN & F1 == 0)      --> TP = NaN, F1=NaN     --> PDice=NaN
+        inGT=all_count_gt[i]!=0
+        inP=all_count_pred[i]!=0
+        if inGT and not inP: # FN - Set TPDice to 0.0
+            all_tp_dice[i] = 0.0
+        elif not inGT and inP: # FP - Set FP to Nan
+            all_obj_f1[i] = np.NaN
+
+    all_pan_dice = {i: all_obj_f1[i] * all_tp_dice[i] for i in labels}
+
     avg_obj_f1 = np.nanmean(list(all_obj_f1.values()))
     avg_tp_dice = np.nanmean(list(all_tp_dice.values()))
+    avg_pan_dice = np.nanmean(list(all_pan_dice.values()))
+
     metrics = {
         'avg_obj_f1': avg_obj_f1,
         'avg_tp_dice': avg_tp_dice,
-        'avg_panoptic_quality_dice': avg_obj_f1 * avg_tp_dice,
+        'avg_panoptic_quality_dice': avg_pan_dice,
         'gt_folder': folder_gt,
         'obj_f1_by_label': all_obj_f1,
         'tp_dice_by_label': all_tp_dice,
-        'panoptic_quality_dice_by_label': {i: all_obj_f1[i] * all_tp_dice[i] for i in labels}
+        'panoptic_quality_dice_by_label': all_pan_dice
     }
     save_json(metrics, join(folder_pred, 'metrics_obj.json'), sort_keys=False)
     print(folder_pred)
