@@ -67,7 +67,7 @@ Process the Data by adapting the [toothfairy2.py](toothseg/datasets/toothfairy2/
 2. Add this [configurations](nnUNet_plans/plans_semantic_branch.json) to your semantic segmentation branch plans (Dataset 121 and 181).
    - open `${nnUNet_preprocessed}/Dataset121_ToothFairy2_Teeth/nnUNetPlans.json` insert [this](nnUNet_plans/plans_semantic_branch.json) into the `configurations` entry (analogue for all other datasets).
 3. Add this  [configurations](nnUNet_plans/plans_instance_branch.json) to your instance segmentation branch plans (Dataset 123 and 188).
-4. - open `${nnUNet_preprocessed}/Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px/nnUNetPlans.json` insert [this](nnUNet_plans/plans_instance_branch.json) into the `configurations` entry (analogue for all other datasets).
+   - open `${nnUNet_preprocessed}/Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px/nnUNetPlans.json` insert [this](nnUNet_plans/plans_instance_branch.json) into the `configurations` entry (analogue for all other datasets).
 4. Run nnUNet's preprocessing:
    ```bash
    # For the Inhouse Dataset
@@ -89,7 +89,7 @@ nnUNetv2_train 181 3d_fullres_resample_torch_256_bs8 all -tr nnUNetTrainer_onlyM
 nnUNetv2_train 188 3d_fullres_resample_torch_192_bs8 all -tr nnUNetTrainer -num_gpus 4
 ```
 
-### ToothFairy2[dataset.json](../../../../../media/l727r/data/nnUNet/nnUNetv2_raw/Dataset121_ToothFairy2_Teeth/dataset.json)
+### ToothFairy2
 For ToothFairy we didn't split the files into imagesTr and imagesTs because that would have interfered with other 
 experiments on that datasets. Instead, we extend the nnU-Net splits_final.json file with a fifth fold that represents 
 the 70:30 split used in our paper. Just copy our [splits](toothseg/datasets/toothfairy2/splits_final.json) into the 
@@ -130,7 +130,7 @@ nnU-Net in the setting used here does not use the validation set for anything (n
 
 Both require the final predictions of the previous stage for a full evaluation. 
 Both branches can also be validated separately. 
-For the evaluation of the ToothFairy Data and for inspiration on other data see [evluation_toothfairy.sh](scripts/evaluation_toothfairy.sh)
+For the evaluation of the ToothFairy Data and for inspiration on other data see [evluation_toothfairy2.sh](scripts/evaluation_toothfairy2.sh)
 
 ## Baseline methods
 
