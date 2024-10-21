@@ -1,5 +1,4 @@
 import gc
-import shutil
 from multiprocessing import Pool, Queue, Process, set_start_method, cpu_count
 from time import time
 from typing import Tuple

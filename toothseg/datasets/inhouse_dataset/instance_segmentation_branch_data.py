@@ -1,5 +1,3 @@
-import os
-import shutil
 from multiprocessing import Pool
 
 import SimpleITK as sitk
@@ -10,9 +8,8 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.generate_dataset_json import generate_dataset_json
 from nnunetv2.paths import nnUNet_raw
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
-from scipy.ndimage import binary_fill_holes
 from nnunetv2.utilities.utils import get_filenames_of_train_images_and_targets
-
+from scipy.ndimage import binary_fill_holes
 
 OVERWRITE_EXISTING = False
 

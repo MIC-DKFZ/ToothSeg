@@ -4,7 +4,7 @@ import SimpleITK as sitk
 import pandas as pd
 from batchgenerators.utilities.file_and_folder_operations import *
 
-from toothseg.process_raw_data.utils import copy_geometry
+from toothseg.datasets.inhouse_dataset.utils import copy_geometry
 
 
 def assign_correct_tooth_labels_to_instanceseg(semseg_image: str, instanceseg_image: str, output_filename: str,

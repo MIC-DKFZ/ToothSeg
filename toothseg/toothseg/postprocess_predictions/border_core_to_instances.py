@@ -2,13 +2,12 @@ from multiprocessing import Pool, set_start_method
 
 import numpy as np
 import SimpleITK as sitk
-import torch.cuda
 from batchgenerators.utilities.file_and_folder_operations import *
 from acvl_utils.instance_segmentation.instance_as_semantic_seg import convert_semantic_to_instanceseg, \
     postprocess_instance_segmentation
 import pandas as pd
 
-from toothseg.process_raw_data.utils import copy_geometry
+from toothseg.datasets.inhouse_dataset.utils import copy_geometry
 
 
 def convert_all_sem_to_instance(border_core_seg_folder, output_folder, small_center_threshold=0.03,
