@@ -8,6 +8,7 @@ license = { file = "LICENSE" }
 authors = [
     { name = "Fabian Isensee", email = "f.isensee@dkfz-heidelberg.de"},
     { name = "Lars Kraemer", email = "lars.kraemer@dkfz-heidelberg.de"},
+    { name = "Niels van Nistelrooij", email = "Niels.vanNistelrooij@radboudumc.nl"},
     { name = "Helmholtz Imaging Applied Computer Vision Lab" }
 ]
 classifiers = [

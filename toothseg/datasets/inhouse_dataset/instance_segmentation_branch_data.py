@@ -76,7 +76,6 @@ def convert_sem_dataset_to_instance(
                                              os.path.relpath(i, join(nnUNet_raw, source_dataset_name)))
                                 for i in dataset[k]['images']]
         dataset[k]['label'] = os.path.relpath(dataset[k]['label'], join(nnUNet_raw, source_dataset_name))
-
     generate_dataset_json(join(nnUNet_raw, target_dataset_name), dsj["channel_names"], {'background': 0, 'center': 1, 'border': 2},
                           len(dataset), fe, target_dataset_name, dataset=dataset)
 

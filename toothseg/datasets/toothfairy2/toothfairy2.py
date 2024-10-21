@@ -1,5 +1,5 @@
 import shutil
-from multiprocessing import set_start_method
+
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.Dataset119_ToothFairy2_All import process_ds, mapping_DS121
 from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed
@@ -10,6 +10,7 @@ from toothseg.datasets.inhouse_dataset.semantic_segmentation_branch_data import 
 
 if __name__ == '__main__':
     DOWNLOADED_TOOTHFAIRY2_DIR = nnUNet_raw  # Dataset112 must be located here
+
     # Different nnUNet Datasets
     # Dataset 112: Raw
     # Dataset 119: Replace NaN classes
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     # Dataset 121 has only the teeth and disregards the other classes we are not interested in
     process_ds(DOWNLOADED_TOOTHFAIRY2_DIR, "Dataset112_ToothFairy2", "Dataset121_ToothFairy2_Teeth", mapping_DS121(), None)
 
-    set_start_method('spawn')
+    #set_start_method('spawn')
     source_dataset = maybe_convert_to_dataset_name(121)
     source_dir = join(nnUNet_raw, source_dataset)
 

@@ -53,7 +53,7 @@ def resample_core(source_queue: Queue,
                   target_spacing: Tuple[float, ...] = (0.3, 0.3, 0.3), processes=None):
     with torch.no_grad():
         num_cpu_threads = max((1, cpu_count() - 2, cpu_count() // 2))
-        print(num_cpu_threads)
+        print(f"Num CPU Threads: {num_cpu_threads}")
         r = []
         end_ctr = 0
         while True:
@@ -181,10 +181,11 @@ def convert_dataset(source_dir, target_name, target_spacing, num_processes_loadi
     r = resample_core(q, num_processes_loading, export_pool=pool, target_spacing=target_spacing, processes=processes)
 
     _ = [i.get() for j in r for i in j if i is not None]
-    print(time() - st)
+    print(f"Time: {time() - st}")
 
     if 'dataset' in dsj.keys():
         del dsj['dataset']
+
     save_json(dsj, join(output_dir_base, 'dataset.json'), sort_keys=False)
 
     for p in processes:
