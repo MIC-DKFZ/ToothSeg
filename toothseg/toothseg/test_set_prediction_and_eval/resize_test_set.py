@@ -9,6 +9,7 @@ from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
 from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
+from torch.fx.experimental.unification.multipledispatch.dispatcher import source
 
 OVERWRITE_EXISTING = False
 
@@ -125,9 +126,20 @@ def resize_folder(input_folder,
 if __name__ == '__main__':
     set_start_method('spawn')
 
-    source_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164), 'imagesTs')
-    target_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164),
-                         'imagesTs_resized_for_instanceseg_spacing_02_02_02')
+    import argparse
+    parser = argparse.ArgumentParser(
+        "This script takes a folder containing nifti files and resizes them to corresponding "
+        "(equally named) niftis on the ref folder. The target spacing is 0.2x0.2x0.2")
+    parser.add_argument('-i', type=str, required=True,
+                        help='Input folder. Must contain nifti files')
+    parser.add_argument('-o', type=str, required=True,
+                        help="Output folder. Must be empty! If it doesn't exist it will be created")
+    args = parser.parse_args()
+    # source_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164), 'imagesTs')
+    # target_folder = join(nnUNet_raw, maybe_convert_to_dataset_name(164),
+    #                      'imagesTs_resized_for_instanceseg_spacing_02_02_02')
+    source_folder = args.i
+    target_folder = args.o
     resize_folder(source_folder, target_folder, target_spacing=(0.2, 0.2, 0.2),
                   num_processes_loading=8,
                   num_processes_export=32)

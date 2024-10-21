@@ -8,7 +8,7 @@ from toothseg.datasets.inhouse_dataset.instance_segmentation_branch_data import 
 from toothseg.datasets.inhouse_dataset.semantic_segmentation_branch_data import convert_dataset
 
 if __name__ == '__main__':
-    DOWNLOADED_TOOTHFAIRY2_DIR = ''  # this must be dataset 112
+    DOWNLOADED_TOOTHFAIRY2_DIR = ('/media/l727r/data/nnUNet/nnUNetv2_raw/')  # this must be dataset 112
     # Different nnUNet Datasets
     # Dataset 112: Raw
     # Dataset 119: Replace NaN classes
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     # Dataset 121 has only the teeth and disregards the other classes we are not interested in
     process_ds(DOWNLOADED_TOOTHFAIRY2_DIR, "Dataset112_ToothFairy2", "Dataset121_ToothFairy2_Teeth", mapping_DS121(), None)
 
-    set_start_method('spawn')
+    #set_start_method('spawn')
     source_dataset = maybe_convert_to_dataset_name(121)
     source_dir = join(nnUNet_raw, source_dataset)
 
