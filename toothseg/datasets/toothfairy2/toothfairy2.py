@@ -1,14 +1,15 @@
+import shutil
 from multiprocessing import set_start_method
 from batchgenerators.utilities.file_and_folder_operations import *
 from nnunetv2.dataset_conversion.Dataset119_ToothFairy2_All import process_ds, mapping_DS121
-from nnunetv2.paths import nnUNet_raw
+from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
 from toothseg.datasets.inhouse_dataset.instance_segmentation_branch_data import convert_sem_dataset_to_instance
 from toothseg.datasets.inhouse_dataset.semantic_segmentation_branch_data import convert_dataset
 
 if __name__ == '__main__':
-    DOWNLOADED_TOOTHFAIRY2_DIR = ''  # this must be dataset 112
+    DOWNLOADED_TOOTHFAIRY2_DIR = nnUNet_raw  # Dataset112 must be located here
     # Different nnUNet Datasets
     # Dataset 112: Raw
     # Dataset 119: Replace NaN classes
@@ -40,7 +41,14 @@ if __name__ == '__main__':
         3,
         num_processes=96
     )
+
+    # copy the splits file to the nnUNet_preprocessed folders
+    maybe_mkdir_p(join(nnUNet_preprocessed, "Dataset121_ToothFairy2_Teeth"))
+    maybe_mkdir_p(join(nnUNet_preprocessed, "Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px"))
+
+    shutil.copy(join(os.path.dirname(__file__), 'splits_final.json'), join(nnUNet_preprocessed, "Dataset121_ToothFairy2_Teeth"))
+    shutil.copy(join(os.path.dirname(__file__), 'splits_final.json'), join(nnUNet_preprocessed, "Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px"))
+
     # just here for our convenience
-    # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw'
-    # export nnUNet_raw=/omics/groups/OE0441/E132-Projekte/Projects/2024_MICCAI24_ToothFairy2/nnUNet_raw
+    # export nnUNet_raw='/home/isensee/drives/E132-Projekte/Projects/Helmholtz_Imaging_ACVL/RadboudUni_2022_ShankCBCTTeeth/dataset/nnUNetv2_raw/'
 

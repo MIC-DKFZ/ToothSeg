@@ -19,7 +19,6 @@ OVERWRITE_EXISTING = False
 
 
 def producer(image_fnames, seg_fnames, target_image, target_label, target_queue: Queue):
-    print('hi')
     for i, s, ti, tl in zip(image_fnames, seg_fnames, target_image, target_label):
         print(f'{os.path.basename(i)}')
         if not OVERWRITE_EXISTING and isfile(ti) and isfile(tl):
@@ -45,7 +44,6 @@ def producer(image_fnames, seg_fnames, target_image, target_label, target_queue:
         target_queue.put((im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl))
         del im_source, seg_source, source_spacing, source_origin, source_direction, ti, tl
         gc.collect()
-    print('done')
     target_queue.put('end')
 
 
@@ -202,6 +200,8 @@ if __name__ == '__main__':
     set_start_method('spawn')
     source_dir = join(nnUNet_raw, maybe_convert_to_dataset_name(164))
 
-    convert_dataset(source_dir, f'Dataset{181}_CBCTTeeth_semantic_spacing03', (0.3, 0.3, 0.3))
+    convert_dataset(source_dir, f'Dataset{181}_CBCTTeeth_semantic_spacing03', (0.3, 0.3, 0.3),
+                    2, 6)
     # needed for instance segmentation
-    convert_dataset(source_dir, f'Dataset{183}_CBCTTeeth_semantic_spacing02', (0.2, 0.2, 0.2))
+    convert_dataset(source_dir, f'Dataset{183}_CBCTTeeth_semantic_spacing02', (0.2, 0.2, 0.2),
+                    2, 6)
