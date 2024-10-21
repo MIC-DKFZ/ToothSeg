@@ -185,7 +185,8 @@ def convert_dataset(source_dir, target_name, target_spacing, num_processes_loadi
     _ = [i.get() for j in r for i in j if i is not None]
     print(time() - st)
 
-    del dsj['dataset']
+    if 'dataset' in dsj.keys():
+        del dsj['dataset']
     save_json(dsj, join(output_dir_base, 'dataset.json'), sort_keys=False)
 
     for p in processes:
