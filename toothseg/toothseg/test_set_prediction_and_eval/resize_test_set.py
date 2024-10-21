@@ -9,7 +9,6 @@ from nnunetv2.paths import nnUNet_raw
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import compute_new_shape
 from nnunetv2.preprocessing.resampling.resample_torch import resample_torch_simple
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
-from torch.fx.experimental.unification.multipledispatch.dispatcher import source
 
 OVERWRITE_EXISTING = False
 

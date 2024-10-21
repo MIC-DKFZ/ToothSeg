@@ -32,11 +32,15 @@ keywords = [
     'nnunet'
 ]
 dependencies = [
+    "nnunetv2",
     "torch>=2.0.0",
     "numpy",
     "acvl_utils@git+https://github.com/MIC-DKFZ/acvl_utils.git",
 
 ]
+
+[tool.setuptools]
+packages = ["toothseg"]
 
 [project.urls]
 #homepage = ""
