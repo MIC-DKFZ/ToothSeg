@@ -12,6 +12,10 @@ The framework excels in detecting and labeling individual tooth instances across
 
 ## Installation
 All you need is a working [nnU-Net](https://github.com/MIC-DKFZ/nnUNet/tree/master) setup!
+Afterward, install the ToothSeg Repository by:
+```bash
+pip install -e .
+```
 
 
 ## Dataset Preparation
