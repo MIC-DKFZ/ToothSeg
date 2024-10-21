@@ -1,6 +1,9 @@
 "3d_fullres_resample_torch_256_bs8": {
             "inherits_from": "3d_fullres",
-            "data_identifier": "nnUNetPlans_3d_fullres_resample_torch",
+            "data_identifier": "nnUNetPlans_3d_fullres_resample_torch_ctnorm",
+            "normalization_schemes": [
+                "CTNormalization"
+            ],
             "resampling_fn_data": "resample_torch_fornnunet",
             "resampling_fn_seg": "resample_torch_fornnunet",
             "resampling_fn_data_kwargs": {
