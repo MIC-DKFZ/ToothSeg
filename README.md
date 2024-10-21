@@ -68,9 +68,9 @@ Process the Data by adapting the [toothfairy2.py](toothseg/datasets/toothfairy2/
    nnUNetv2_extract_fingerprint -d 121 123 -np 64
    nnUNetv2_plan_experiment -d 121 123
    ```
-2. Add this [configurations](nnUNet_plans/plans_semantic_branch.json) to your semantic segmentation branch plans (Dataset 121 and 181).
+2. Add this [configuration](nnUNet_plans/plans_semantic_branch.json) to your semantic segmentation branch plans (Dataset 121 and 181).
    - open `${nnUNet_preprocessed}/Dataset121_ToothFairy2_Teeth/nnUNetPlans.json` insert [this](nnUNet_plans/plans_semantic_branch.json) into the `configurations` entry (analogue for all other datasets).
-3. Add this  [configurations](nnUNet_plans/plans_instance_branch.json) to your instance segmentation branch plans (Dataset 123 and 188).
+3. Add this  [configuration](nnUNet_plans/plans_instance_branch.json) to your instance segmentation branch plans (Dataset 123 and 188).
    - open `${nnUNet_preprocessed}/Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px/nnUNetPlans.json` insert [this](nnUNet_plans/plans_instance_branch.json) into the `configurations` entry (analogue for all other datasets).
 4. Run nnUNet's preprocessing:
    ```bash
