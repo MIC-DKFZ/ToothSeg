@@ -56,6 +56,6 @@ python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/resize_predictions
 
 ### 5. Assign tooth labels ###
 python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_tooth_labels.py \
--ifolder ${output_dir}/instances_as_border_core_single_model_instances_resized \
+-ifolder ${output_dir}/instseg_branch_border_core_converted_to_instances_resized \
 -sfolder ${output_dir}/semseg_branch \
 -o ${output_dir}/final_prediction -np ${NUM_PROCESSES}
