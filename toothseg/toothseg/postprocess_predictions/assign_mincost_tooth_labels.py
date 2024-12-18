@@ -208,8 +208,9 @@ if __name__ == '__main__':
                         help='Input folder. Must contain files with semantic segmentations')
     parser.add_argument('-o', type=str, required=True,
                         help="Output folder. Must be empty! If it doesn't exist it will be created")
-    parser.add_argument('--pair_dists', type=str, required=False, default='toothseg/datasets/toothfairy2/fdi_pair_distrs.json',
-                        help='JSON file containing the means and standard deviations of tooth pair distances.')
+    parser.add_argument('--distributions', type=str, required=False,
+                        default='toothseg/datasets/inhouse_dataset/test_fdi_pair_distrs.json',
+                        help='JSON file containing the means and covariancematrices of tooth pair offsets.')
     parser.add_argument('--overwrite', action='store_true',
                         help='By default the script will skip existing results. Set this flag to overwrite (recompute) '
                              'them instead.')
@@ -219,7 +220,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # load distributions of tooth pair distances
-    with open(args.pair_dists, 'r') as f:
+    with open(args.distributions, 'r') as f:
         pair_dists = json.load(f)
 
     normals = []

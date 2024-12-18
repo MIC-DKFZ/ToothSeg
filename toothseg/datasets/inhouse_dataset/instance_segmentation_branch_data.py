@@ -11,6 +11,8 @@ from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_datas
 from nnunetv2.utilities.utils import get_filenames_of_train_images_and_targets
 from scipy.ndimage import binary_fill_holes
 
+from toothseg.datasets.inhouse_dataset.semantic_segmentation_branch_data import convert_dataset
+
 OVERWRITE_EXISTING = False
 
 
@@ -78,12 +80,21 @@ def convert_sem_dataset_to_instance(
 
 
 if __name__ == '__main__':
-    # export nnUNet_raw="/media/isensee/My Book1/datasets/Shank"
+    source_dataset = maybe_convert_to_dataset_name(164)
+    source_dir = join(nnUNet_raw, source_dataset)
+
+    # needed for instance segmentation
+    convert_dataset(
+        source_dir,
+        f'Dataset{165}_CBCTTeeth_semantic_spacing02',
+        (0.2, 0.2, 0.2),
+        2, 6,
+    )
 
     convert_sem_dataset_to_instance(
-        maybe_convert_to_dataset_name(183),
-        'Dataset188_CBCTTeeth_instance_spacing02_brd3px',
+        maybe_convert_to_dataset_name(165),
+        'Dataset166_CBCTTeeth_instance_spacing02_brd3px',
         0.2,
         3,
-        num_processes=128
+        num_processes=32
     )
