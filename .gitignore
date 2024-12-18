@@ -97,6 +97,7 @@ ENV/
 .idea
 *.txt
 .idea/*
+.vscode/*
 *.nii.gz
 *.nii
 *.tif
