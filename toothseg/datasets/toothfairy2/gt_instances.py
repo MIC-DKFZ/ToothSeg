@@ -2,7 +2,7 @@ from collections import defaultdict
 from functools import partial
 import multiprocessing as mp
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 from batchgenerators.utilities.file_and_folder_operations import *
 import matplotlib.pyplot as plt
@@ -82,9 +82,9 @@ def process_case(source_seg_folder: Path, sem_file: Path):
 
 def remove_outliers(
     pair_offsets,
-    axes: List[int, '...']=[0, 1],
+    axes: List[int]=[0, 1],
     poly_degree: int=3,
-    max_diffs: List[int, int]=[16, 22],  # upper, lower
+    max_diffs: Tuple[int, int]=(16, 22),  # upper, lower
 ):
     reg_functions = []
     for is_arch_lower in [False, True]:
