@@ -35,6 +35,7 @@ def prepare_instances(
 
     # load and orient semantic predictions
     sem_seg = np.load(sem_dir / f'{inst_file.name[:-7]}.npz')['probabilities']
+    sem_seg[sem_seg == 0] = 1e-6
     sem_seg = nibabel.apply_orientation(sem_seg.transpose(0, 3, 2, 1), np.concatenate((
         np.array([[0, 1]]),
         np.column_stack((orientation[:, 0] + 1, orientation[:, 1])),
@@ -57,6 +58,7 @@ def prepare_instances(
         if (scores[1:] >= 0.95).sum() <= 1:
             split_idxs = np.zeros(inst_mask.sum(), dtype=int)
         else:
+            print('Splitting:', inst_file.name, 'instance', inst_idx)
             class_idxs = np.nonzero(scores[1:] >= 0.95)[0] + 1
             split_idxs = sem_seg[class_idxs][:, inst_mask].argmax(0)
 
@@ -116,11 +118,6 @@ def determine_transition_probabilities(
                 normal = normals[index[j]][index[k]]
                 trans_log_probs[i, j, k] = normal.logpdf(offsets[:2])
 
-        # xy_densities = normals.logpdf(offsets)[index, index[:, None], :2]
-        # trans_log_probs[i] = np.sum(xy_densities, axis=-1)
-
-    # trans_probs /= trans_probs.sum(axis=1, keepdims=True)
-
     return trans_log_probs
 
     
@@ -128,7 +125,7 @@ def dynamic_programming(
     tooth_probs,
     seq_idxs,
     trans_log_probs,
-    tooth_factor: float=2.0,
+    tooth_factor: float=4.0,
 ):
     tooth_log_probs = np.log(tooth_probs)
 
@@ -156,11 +153,14 @@ def dynamic_programming(
     return path, q[-1].min()
 
 
-def process_case(sem_dir: Path, out_dir: Path, normals, overwrite: bool, inst_file: Path):    
+def process_case(sem_dir: Path, out_dir: Path, normals, overwrite: bool, inst_file: Path):
     inst_centroids, inst_probs, inst_seg = prepare_instances(sem_dir, inst_file, out_dir, overwrite)
 
     # remove background instances
     is_background = inst_probs[:, 0] >= 0.95
+    if np.any(is_background):
+        bg_idxs = np.nonzero(is_background)[0]
+        print('Ignoring:', inst_file.name, 'instances', 1 + bg_idxs, 'probs', inst_probs[bg_idxs, 0])
     inst_centroids = inst_centroids[~is_background]
     inst_probs = inst_probs[~is_background]
     
@@ -183,7 +183,12 @@ def process_case(sem_dir: Path, out_dir: Path, normals, overwrite: bool, inst_fi
         )
         path, cost = dynamic_programming(arch_probs, seq_idxs, trans_probs)
 
-        inst_fdis[arch_idxs[seq_idxs]] = path + 16 * is_arch_lower + 1
+        argmax_fdis = np.argmax(arch_probs[seq_idxs], axis=-1) + 16 * is_arch_lower + 1
+        path_fdis = path + 16 * is_arch_lower + 1
+        if not np.all(argmax_fdis == path_fdis):
+            print('Updating:', inst_file.name, 'from', argmax_fdis, 'to', path_fdis)
+
+        inst_fdis[arch_idxs[seq_idxs]] = path_fdis
 
     # incorporate background voxels and instances
     inst_map = np.zeros(is_background.shape[0] + 1)

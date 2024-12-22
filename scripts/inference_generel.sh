@@ -55,6 +55,7 @@ python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/resize_predictions
 -ref ${input_dir}/imagesTs -np ${NUM_PROCESSES}
 
 ### 5. Assign tooth labels ###
+NUM_PROCESSES=4
 python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_mincost_tooth_labels.py \
 -ifolder ${output_dir}/instseg_branch_border_core_converted_to_instances_resized \
 -sfolder ${output_dir}/semseg_branch \
