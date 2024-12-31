@@ -63,9 +63,9 @@ def load_convert_semantic_to_instance_save(input_file: str, output_file: str, sm
 if __name__ == '__main__':
     set_start_method('spawn')
 
-    small_center_threshold_default = 20  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
-    isolated_border_as_separate_instance_threshold_default = 0  # =0.3**3 * 10  # equivalent to 10 pixels at 0.3 spacing
-    min_instance_size_default = 20
+    small_center_threshold_default = 16  # equivalent to 2000 voxels at 0.2 spacing
+    isolated_border_as_separate_instance_threshold_default = 0
+    min_instance_size_default = 16  # equivalent to 2000 voxels at 0.2 spacing
 
     import argparse
     parser = argparse.ArgumentParser("This script takes a folder containing nifti files with border-core predictions "

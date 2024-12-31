@@ -16,13 +16,13 @@ def prepare_instances(
     out_dir: Path,
     overwrite: bool,
 ):
-    inst_nii = nibabel.load(inst_file)
     if not overwrite and (out_dir / (inst_file.name[:-7] + '.npz')).exists():
         out = np.load(out_dir / (inst_file.name[:-7] + '.npz'))
 
         return out['centroids'], out['probs'], out['seg']
 
     # load and orient instances
+    inst_nii = nibabel.load(inst_file)
     inst_seg = np.asarray(inst_nii.dataobj)
     orientation = nibabel.io_orientation(inst_nii.affine)
     assert np.all(orientation[:, 0] == [0, 1, 2]), inst_file.name + str(orientation)
@@ -52,6 +52,9 @@ def prepare_instances(
         class_idxs = voxel_probs.argmax(0)
         scores = np.zeros(33)
         for class_idx in np.nonzero(voxel_probs.mean(1) >= 0.1)[0]:
+            if not np.any(class_idxs == class_idx):
+                print('Empty slice:', inst_file.name, 'instance', inst_idx)
+                continue
             score = voxel_probs[class_idx, class_idxs == class_idx].mean()
             scores[class_idx] = score
 

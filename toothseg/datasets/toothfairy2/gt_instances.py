@@ -198,9 +198,9 @@ if __name__ == '__main__':
     border_core_seg_folder = join(nnUNet_raw, "Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px", "labelsTr")
     instance_seg_folder = join(nnUNet_raw, "Dataset124_ToothFairy2fixed_teeth_spacing02_instances", "labelsTr")
     convert_all_sem_to_instance(border_core_seg_folder, instance_seg_folder, overwrite=False,
-                            small_center_threshold=20,
+                            small_center_threshold=16,
                             isolated_border_as_separate_instance_threshold=0,
-                            num_processes=64, min_instance_size=20,
+                            num_processes=64, min_instance_size=16,
                             file_ending='.nii.gz')
     
     # convert instances back to original spacing
