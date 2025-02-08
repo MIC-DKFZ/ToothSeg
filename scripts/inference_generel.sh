@@ -15,7 +15,7 @@ python ${CODE_PATH}/toothseg/toothseg/test_set_prediction_and_eval/resize_test_s
 
 ### 2.1 semantic segmentation branch ###
 # Default
-nnUNetv2_predict -i ${input_dir}/imagesTs -o ${output_dir}/semseg_branch -d 181 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -c 3d_fullres_resample_torch_256_bs8 -f all
+nnUNetv2_predict --save_probabilities -i ${input_dir}/imagesTs -o ${output_dir}/semseg_branch -d 181 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -c 3d_fullres_resample_torch_256_bs8 -f all
 # or Parallelized
 #CUDA_VISIBLE_DEVICES=0 nnUNetv2_predict -i ${input_dir}/imagesTs -o ${output_dir}/semseg_branch -d 181 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -c 3d_fullres_resample_torch_256_bs8 -f all -num_parts 8 -part_id 0 &
 #CUDA_VISIBLE_DEVICES=1 nnUNetv2_predict -i ${input_dir}/imagesTs -o ${output_dir}/semseg_branch -d 181 -tr nnUNetTrainer_onlyMirror01_DASegOrd0 -c 3d_fullres_resample_torch_256_bs8 -f all -num_parts 8 -part_id 1 &
@@ -55,7 +55,8 @@ python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/resize_predictions
 -ref ${input_dir}/imagesTs -np ${NUM_PROCESSES}
 
 ### 5. Assign tooth labels ###
-python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_tooth_labels.py \
+NUM_PROCESSES=4
+python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_mincost_tooth_labels.py \
 -ifolder ${output_dir}/instseg_branch_border_core_converted_to_instances_resized \
 -sfolder ${output_dir}/semseg_branch \
 -o ${output_dir}/final_prediction -np ${NUM_PROCESSES}

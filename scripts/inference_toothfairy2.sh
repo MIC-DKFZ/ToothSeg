@@ -31,7 +31,7 @@ python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/resize_predictions
 -ref ${REF_FOLDER_RESAMPLING} -np 64
 
 # 5. Assign tooth labels
-python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_tooth_labels.py \
+python ${CODE_PATH}/toothseg/toothseg/postprocess_predictions/assign_majority_tooth_labels.py \
 -ifolder ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_instances_resized \
 -sfolder ${nnUNet_results}/${SEMSEG_DATASET_NAME}/${NNUNET_TRAINING_SEMSEG}/fold_5/validation \
 -o ${nnUNet_results}/${INSTSEG_DATASET_NAME}/${NNUNET_TRAINING_INSTSEG}/fold_5/validation_final_predictions_merged \

@@ -202,6 +202,3 @@ if __name__ == '__main__':
 
     convert_dataset(source_dir, f'Dataset{181}_CBCTTeeth_semantic_spacing03', (0.3, 0.3, 0.3),
                     2, 6)
-    # needed for instance segmentation
-    convert_dataset(source_dir, f'Dataset{183}_CBCTTeeth_semantic_spacing02', (0.2, 0.2, 0.2),
-                    2, 6)
