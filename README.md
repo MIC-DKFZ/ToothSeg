@@ -1,4 +1,4 @@
-# ToothSeg: Multiclass Tooth Instance Segmentation in cone-beam CT scans using Dual-Branch Deep Neural Network
+# ToothSeg: A Self-Correcting Deep Learning Approach for Robust Tooth Instance Segmentation and Numbering in CBCT
 
 ## Introduction
 
