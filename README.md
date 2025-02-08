@@ -122,13 +122,13 @@ nnU-Net in the setting used here does not use the validation set for anything (n
 **Note 2:** To limit the storage requirements, it is recommended to add `probabilities_final[probabilities_final < 1e-6] = 0` to the `export_prediction_from_logits` function in
 *$CONDA_ENV/lib/python3.x/site-packages/nnunetv2/inference/export_prediction.py*, which will truncate negligible probabilities to significantly (50-100x) lower the compressed file sizes.
 1. **Resize Data:** Resize the test set for the instance segmentation (border-core) prediction via 
-[resize_test_set.py](toothseg/toothseg/test_set_prediction_and_eval/resize_test_set.py). **Skip for TootFairy2!**
-2. **Predict Data:** Run the predictions as you normally would with nnU-Net. **Skip for TootFairy2!**
+[resize_test_set.py](toothseg/toothseg/test_set_prediction_and_eval/resize_test_set.py). **Skip for ToothFairy2!**
+2. **Predict Data:** Run the predictions as you normally would with nnU-Net. **Skip for ToothFairy2!**
    - **Semantic Branch** (on original testset): Predictions will already be in the correct spacing (same as original images).
    - **Instance Branch** (on resized testset): Predictions will be in border-core format and in their 0.2x0.2x0.2 spacing --> further processing is needed
 3. **Convert Instance Prediction:** Convert border-core predictions to instances with [border_core_to_instances.py](toothseg/toothseg/postprocess_predictions/border_core_to_instances.py).
 4. **Resize Instance Prediction:** Resize instances to original image spacing using [resize_predictions.py](toothseg/toothseg/postprocess_predictions/resize_predictions.py).
-5. **Merge Predictions:** Assign the predicted instances the correct tooth labels (as predicted by the semantic segmentation model) with [assign_tooth_labels.py](toothseg/toothseg/postprocess_predictions/assign_tooth_labels.py)
+5. **Self-correct Predictions:** Split and ignore the predicted instances and assign them the correct tooth labels (as predicted by the semantic segmentation model) with [assign_mincost_tooth_labels.py](toothseg/toothseg/postprocess_predictions/assign_mincost_tooth_labels.py)
 
 ## Evaluate test set
 
@@ -142,6 +142,17 @@ For the evaluation of the ToothFairy Data and for inspiration on other data see 
 ## Baseline methods
 
 All baseline method implementations and corresponding documentation can be found [here](toothseg/baselines).
+
+## Citation
+
+```
+@article{toothseg,
+  title={ToothSeg: A Self-Correcting Deep Learning Approach for Robust Tooth Instance Segmentation and Numbering in CBCT}
+  author={van Nistelrooij, Niels and Kr{\"a}mer, Lars and Kempers, Steven and Beyer, Michel and Ambrogioni, Luca and Bolelli, Federico and Xi, Tong and Berg{\'e}, Stefaan and Heiland, Max and Maier-Hein, Klaus H. and Vinayahalingam, Shankeeth and Isensee, Fabian},
+  year={2025},
+  note={Submitted to IEEE Transactions on Medical Imaging}
+}
+```
 
 ## Acknowledgements
 
