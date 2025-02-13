@@ -139,9 +139,9 @@ Both require the final predictions of the previous stage for a full evaluation.
 Both branches can also be validated separately. 
 For the evaluation of the ToothFairy Data and for inspiration on other data see [evluation_toothfairy2.sh](scripts/evaluation_toothfairy2.sh)
 
-## Baseline methods
+## Reference methods
 
-All baseline method implementations and corresponding documentation can be found [here](toothseg/baselines).
+All reference method implementations and corresponding documentation can be found [here](toothseg/baselines).
 
 ## Citation
 
@@ -160,6 +160,10 @@ All baseline method implementations and corresponding documentation can be found
   <img src="figures/logos/HI_Logo.png" width="150"> &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="figures/logos/DKFZ_Logo.png" width="500"> 
 </p>
+<p align="left">
+  <img src="figures/logos/radboud.png" width="300"> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="figures/logos/charite.png" width="300"> 
+</p>
 
 This Repository is developed and maintained by the Applied Computer Vision Lab (ACVL)
-of [Helmholtz Imaging](https://www.helmholtz-imaging.de/).
+of [Helmholtz Imaging](https://www.helmholtz-imaging.de/), with collaboration from Charité – Universitätsmedizin Berlin and the [Diagnostic Image Analysis Group (DIAG)](https://www.diagnijmegen.nl/) of Radboud University Medical Center.
