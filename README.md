@@ -143,6 +143,15 @@ For the evaluation of the ToothFairy Data and for inspiration on other data see 
 
 All reference method implementations and corresponding documentation can be found [here](toothseg/baselines).
 
+## Model Checkpoints
+
+The checkpoints for ToothSeg and all baseline methods, trained on the ToothFairy2 Challenge Dataset can be found here:
+https://zenodo.org/records/14893540
+
+To use the ToothSeg Checkpoints place the folders *Dataset121_ToothFairy2_Teeth* and *Dataset123_ToothFairy2fixed_teeth_spacing02_brd3px* into your nnUNet_results folder.
+Afterwards, follow the instructions in the Inference section.
+
+
 ## Citation
 
 ```
