@@ -42,9 +42,14 @@ pip3 install -r requirements.txt
 
 ## Inference
 
-### Model checkpoints
+### Model Checkpoints
 
-Please visit [Google Drive](https://drive.google.com/drive/folders/1L3dWoCvrzDyhoxrly8H7-KIEPULxAUei?usp=sharing) to download the checkpoints.
+The checkpoints for all baseline methods, trained on the ToothFairy2 Challenge Dataset can be found here:
+https://zenodo.org/records/14893540
+
+To use the checkpoints, please download and unzip the archive in the current working directory.
+Then, you can specify the paths to each checkpoint of a method in the method's configuration file in `baselines/config` after the `pretrained` key.
+
 
 ### Configuration
 
