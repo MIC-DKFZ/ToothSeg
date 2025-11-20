@@ -119,8 +119,43 @@ Since we coded the train:test split into fold 5 we can just use the predictions 
 Don't worry about the fact that nnU-Net interprets our test set as validation set: 
 nnU-Net in the setting used here does not use the validation set for anything (no epoch selection etc.) that would impact test set integrity.
 
-**Note 2:** To limit the storage requirements, it is recommended to add `probabilities_final[probabilities_final < 1e-6] = 0` to the `export_prediction_from_logits` function in
-*$CONDA_ENV/lib/python3.x/site-packages/nnunetv2/inference/export_prediction.py*, which will truncate negligible probabilities to significantly (50-100x) lower the compressed file sizes.
+**Note 2:** To limit the storage requirements, it is recommended to replace
+``` python
+segmentation_final, probabilities_final = ret
+np.savez_compressed(output_file_truncated + '.npz', probabilities=probabilities_final)
+```
+with
+``` python
+segmentation_final, probabilities_final = ret
+probabilities_final[probabilities_final < 1e-6] = 0
+np.savez_compressed(output_file_truncated + '.npz', probabilities=probabilities_final)
+```
+in the `export_prediction_from_logits` function in *$CONDA_ENV/lib/python3.x/site-packages/nnunetv2/inference/export_prediction.py*, which will truncate negligible probabilities to significantly (50-100x) lower the compressed file sizes.
+
+**Note 3:** To limit RAM requirements, it is recommended to replace
+``` python
+if not return_probabilities:
+   # this has a faster computation path becasue we can skip the softmax in regular (not region based) trainig
+   segmentation = label_manager.convert_logits_to_segmentation(predicted_logits)
+else:
+   predicted_probabilities = label_manager.apply_inference_nonlin(predicted_logits)
+   segmentation = label_manager.convert_probabilities_to_segmentation(predicted_probabilities)
+del predicted_logits
+```
+with
+``` python
+if not return_probabilities:
+   # this has a faster computation path becasue we can skip the softmax in regular (not region based) trainig
+   segmentation = label_manager.convert_logits_to_segmentation(predicted_logits)
+   del predicted_logits
+else:
+   predicted_probabilities = label_manager.apply_inference_nonlin(predicted_logits)
+   del predicted_logits
+   segmentation = label_manager.convert_probabilities_to_segmentation(predicted_probabilities)
+```
+in the `convert_predicted_logits_to_segmentation_with_correct_shape` function in
+*$CONDA_ENV/lib/python3.x/site-packages/nnunetv2/inference/export_prediction.py*, which will remove the logits sooner, only keeping the probabilities and segmentation in memory.
+
 1. **Resize Data:** Resize the test set for the instance segmentation (border-core) prediction via 
 [resize_test_set.py](toothseg/toothseg/test_set_prediction_and_eval/resize_test_set.py). **Skip for ToothFairy2!**
 2. **Predict Data:** Run the predictions as you normally would with nnU-Net. **Skip for ToothFairy2!**
